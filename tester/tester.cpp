@@ -10,23 +10,25 @@ void select_sample(StringViewVector& sample, Iter begin, Iter end,
 }
 
 void Tester::learn_codec() {
+  std::cout << "gtugthugthu";
   StringViewVector sample;
-  select_sample(sample, this->data.begin(), this->data.end(), this-data.size() / 12);
+
+  select_sample(sample, this->data.begin(), this->data.end(), this->data.size() / 12);
   //12 is constant that have to be changed in the future
   this->codec->learn(sample);
-  cout << "learning is successful";
+  std::cout << "learning is successful";
 }
 
 void Tester::readfile(const std::string& data_in_file) {
-  std::ifstream input(data_file);
-  //don't know where the mistake is. But it doesn't work
+  std::ifstream input(data_in_file);
+  //don't know where the mistake is. But it doesn't work properly
   while (input.good()) {
     std::string cur_string;
     input >> cur_string;
     this->data.push_back(cur_string);
   }
   input.close();
-  cout << data.size() << " strings were read" << std::endl;
+  std::cout << data.size() << " strings were read" << std::endl;
 }
 
 void Tester::set_codec(Codecs::CodecIFace& codec) {
@@ -37,7 +39,7 @@ void Tester::test_encode() {
   for (auto& cur_string : this->data) {
     std::experimental::string_view out;
     this->codec->encode(out, cur_string);
-    this->enсoded_data.push_back(out);
+    this->encoded_data.push_back(out);
   }
 }
 
@@ -45,7 +47,7 @@ void Tester::test_decode() {
   for (auto& cur_string : this->data) {
     std::experimental::string_view out;
     this->codec->decode(out, cur_string);
-    this->deсoded_data.push_back(out);
+    this->decoded_data.push_back(out);
   } 
 }
 

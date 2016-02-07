@@ -12,7 +12,7 @@ class Tester {
 public:
   void readfile(const std::string&);
   void learn_codec();
-  void set_codec(Codecs::CodecIFace);
+  void set_codec(Codecs::CodecIFace&);
   void check_correctness();
   void test_encode();
   void test_decode();
