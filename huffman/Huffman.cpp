@@ -1,4 +1,6 @@
 #include "Huffman.h"
+#include <iostream>
+#include <unordered_map>
 
 namespace Codecs {
 
@@ -18,10 +20,26 @@ namespace Codecs {
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return records_total / 12;
+    return records_total;
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
+    std::unordered_map<char, int> chars;
+    size_t total_count = 0;
+    for (auto& cur_string : sample) {
+      total_count += cur_string.size();
+      for (auto& one_char : cur_string) {
+        auto iterator = chars.find(one_char);
+        if (iterator != chars.end()) {
+          ++(iterator->second);
+        } else {
+          chars.insert(std::make_pair(one_char, 1));
+        }
+      }
+    }
+    for (auto it = chars.begin(); it != chars.end(); ++it) {
+      std::cout << it->first << " " << it->second << std::endl;
+    }
 
   }
 
