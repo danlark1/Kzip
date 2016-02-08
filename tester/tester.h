@@ -18,7 +18,7 @@ public:
   void test_decode();
 protected:
   Codecs::CodecIFace* codec;
-  StringViewVector data;
-  StringViewVector decoded_data;
-  StringViewVector encoded_data;
+  std::vector<std::string> data;
+  std::vector<std::string> decoded_data;
+  std::vector<std::string> encoded_data;
 };
