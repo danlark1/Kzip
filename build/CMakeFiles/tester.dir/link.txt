@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++14 -Ofast -Wall   CMakeFiles/tester.dir/main.cpp.o CMakeFiles/tester.dir/huffman/Huffman.cpp.o CMakeFiles/tester.dir/tester/tester.cpp.o  -o tester -rdynamic 
