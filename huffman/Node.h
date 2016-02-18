@@ -1,5 +1,4 @@
-#ifndef NODE_H
-#define NODE_H
+#pragma once
 
 #include <map>
 #include <vector>
@@ -9,18 +8,15 @@
 enum Node_type {LEAF, BIND};
 
 class Node {
-private:
+public:
   Node_type type;
   int frequency;
   char data;
   Node* left;
   Node* right;
-public:
   Node(char d, int s, Node_type = LEAF); // Construct a list
   Node(Node* l, Node* r, Node_type = BIND); // Construct a bind node
   ~Node();
   int getFrequency();
-  void fill(std::map<char, std::pair<int, int>>& enc, int bits, int nbits);
+  char getData();
 };
-
-#endif
