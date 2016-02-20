@@ -8,6 +8,10 @@
 
 namespace Codecs {
 
+  bool comp(Node* l, Node* r) {
+    return l->getFrequency() > r->getFrequency();
+  }
+
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     unsigned char buf = 0;
     uint8_t count = 0;
@@ -30,13 +34,9 @@ namespace Codecs {
     encoded += static_cast<unsigned char>(count);
   }
 
-  void HuffmanCodec::decode(string& raw, const string_view& encoded) {
-
-  }
-
-  void HuffmanCodec::decode_current_machine(string& raw, const string_view& encoded) {
+  void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
     uint8_t count = 0;
-    Node* cur = root_for_encode;
+    Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
     size_t i = 0;
     while (i < encoded.size() - 1) {
@@ -48,7 +48,7 @@ namespace Codecs {
       }
       if (cur->left == nullptr && cur->right == nullptr) {
         raw += cur->getData();
-        cur = root_for_encode;
+        cur = root_for_decode;
       }
       ++count;
       if (count == CHAR_SIZE || (i == encoded.size() - 2 && encoded[i + 1] == count)) {
@@ -66,18 +66,6 @@ namespace Codecs {
     }
     output.close();
     return string();
-  }
-
-  void HuffmanCodec::load(const string& config) {
-
-  }
-
-  size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(1000000, static_cast<int>(records_total));
-  }
-
-  bool comp(Node* l, Node* r) {
-    return l->getFrequency() > r->getFrequency();
   }
 
   void HuffmanCodec::Build_table(Node* root_for_table, std::vector<bool>& code) {
@@ -98,6 +86,43 @@ namespace Codecs {
     code.pop_back();
   }
 
+  void HuffmanCodec::load(const string_view& config) {
+    std::ifstream input(config.to_string());
+    for (size_t i = 0; i < (1 << CHAR_SIZE); ++i) {
+      uint32_t sym;
+      uint64_t cnt;
+      input >> sym >> cnt;
+      chars.insert({static_cast<unsigned char>(sym), cnt});
+    }
+
+    std::vector<Node*> table_cur;
+    for (auto it = chars.begin(); it != chars.end(); ++it) {
+      Node *p = new Node(it->first, it->second);
+      table_cur.push_back(p);
+    }
+
+    while (table_cur.size() != 1) {
+      std::stable_sort(table_cur.begin(), table_cur.end(), comp);
+      Node *left_son = table_cur.back();
+      table_cur.pop_back();
+      Node *right_son = table_cur.back();
+      table_cur.pop_back();
+      Node *parent = new Node(left_son, right_son);
+      table_cur.push_back(parent);
+    }
+    root_for_decode = table_cur.front();
+    Node* root_for_table = root_for_decode;
+
+
+    std::vector<bool> code;
+    Build_table(root_for_table, code);
+    code.clear();
+  }
+
+  size_t HuffmanCodec::sample_size(size_t records_total) const {
+    return std::min(1000000, static_cast<int>(records_total));
+  }
+
   void HuffmanCodec::learn(const StringViewVector& sample) {
     size_t total_count = 0;
 
@@ -114,7 +139,6 @@ namespace Codecs {
         }
       }
     }
-
     std::vector<Node*> table_cur;
     for (auto it = chars.begin(); it != chars.end(); ++it) {
       Node *p = new Node(it->first, it->second);
