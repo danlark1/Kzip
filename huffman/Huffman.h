@@ -4,10 +4,11 @@
 #include "Node.h"
 #include <unordered_map>
 #include <list>
+#include <climits>
 
 namespace Codecs {
 
-  const size_t CHAR_SIZE = (sizeof(char) * 8);
+  const size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
 
   class HuffmanCodec : public CodecIFace {
   public:  

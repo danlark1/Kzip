@@ -23,15 +23,15 @@ namespace Codecs {
         ++count;
         if (count == CHAR_SIZE) {
           count = 0;
-          encoded += buf;
+          encoded.push_back(buf);
           buf = 0;
         }
       }
     }
     if (count != 0) {
-      encoded += buf;
+      encoded.push_back(buf);
     }
-    encoded += static_cast<unsigned char>(count);
+    encoded.push_back(static_cast<unsigned char>(count));
   }
 
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
@@ -47,7 +47,7 @@ namespace Codecs {
         cur = cur->left;
       }
       if (cur->left == nullptr && cur->right == nullptr) {
-        raw += cur->getData();
+        raw.push_back(cur->getData());
         cur = root_for_decode;
       }
       ++count;
@@ -120,7 +120,7 @@ namespace Codecs {
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(1000000, static_cast<int>(records_total));
+    return std::min(static_cast<size_t>(10000), records_total);
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {

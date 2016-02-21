@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <ctime>
 #include "tester.h"
 
 template <typename Iter>
@@ -12,9 +13,9 @@ void select_sample(StringViewVector& sample, Iter begin, Iter end,
 void Tester::learn_codec() {
   StringViewVector sample;
   select_sample(sample, this->data.begin(), this->data.end(), this->codec->sample_size(this->data.size()));
-  double start = 1.0 * clock();
+  double start = clock();
   this->codec->learn(sample);
-  double finish = 1.0 * clock();
+  double finish =  clock();
   std::cout << "learning is successful in " << (finish - start) / CLOCKS_PER_SEC << std::endl;
 }
 
