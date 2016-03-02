@@ -14,7 +14,7 @@ namespace Codecs {
 
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     unsigned char buf = 0;
-    int32_t count = 0;
+    size_t count = 0;
     for (size_t i = 0; i < raw.size(); ++i) {
       unsigned char c = raw[i];
       auto it = table.find(c);
@@ -41,28 +41,48 @@ namespace Codecs {
 
 
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
-    uint8_t count = 0;
+    int64_t count = 0;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
-    size_t encoded_size = static_cast<int64_t>(encoded.size()) - 2;
-    size_t i = 0;
-    while (i < encoded_size + 1) {
+    int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 2;
+    int64_t i = 0;
+
+    //till almost the last element
+    while (i < encoded_size) {
+      for (size_t j = 0; j < CHAR_SIZE; ++j) {
+        if (byte & (1 << (CHAR_SIZE - j - 1))) {
+          cur = cur->right;
+        } else {
+          cur = cur->left;
+        }
+        if (cur->left == cur->right) { //is equal to cur->left == nullptr == cur->right
+          raw.push_back(cur->getData());
+          cur = root_for_decode;
+        }
+      }
+      ++i;
+      byte = encoded[i];
+    }
+
+    //last element
+    while (i != encoded_size + 1) {
       if (byte & (1 << (CHAR_SIZE - count - 1))) {
         cur = cur->right;
       } else {
         cur = cur->left;
       }
-      if (cur->left == nullptr && cur->right == nullptr) {
+      if (cur->left == cur->right) {
         raw.push_back(cur->getData());
         cur = root_for_decode;
       }
       ++count;
-      if (count == CHAR_SIZE || (i == encoded_size && encoded[i + 1] == count)) {
+      if (count == CHAR_SIZE || encoded[i + 1] == count) {
         count = 0;
         ++i;
         byte = encoded[i];
       } 
     }
+
   }
 
   string HuffmanCodec::save() const {
