@@ -45,10 +45,9 @@ namespace Codecs {
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
     int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 2;
-    int64_t i = 0;
 
     //till almost the last element
-    while (i < encoded_size) {
+    for (int64_t i = 0; i < encoded_size; ++i) {
       for (size_t j = 0; j < CHAR_SIZE; ++j) {
         if (byte & (1 << (CHAR_SIZE - j - 1))) {
           cur = cur->right;
@@ -60,12 +59,11 @@ namespace Codecs {
           cur = root_for_decode;
         }
       }
-      ++i;
-      byte = encoded[i];
+      byte = encoded[i + 1];
     }
 
     //last element
-    while (i != encoded_size + 1) {
+    while (true) {
       if (byte & (1 << (CHAR_SIZE - count - 1))) {
         cur = cur->right;
       } else {
@@ -76,10 +74,10 @@ namespace Codecs {
         cur = root_for_decode;
       }
       ++count;
-      if (count == CHAR_SIZE || encoded[i + 1] == count) {
+      if (count == CHAR_SIZE || encoded[encoded_size + 1] == count) {
         count = 0;
-        ++i;
-        byte = encoded[i];
+        byte = encoded[encoded_size];
+        break;
       } 
     }
 
