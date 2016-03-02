@@ -14,14 +14,19 @@ namespace Codecs {
 
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     unsigned char buf = 0;
-    uint8_t count = 0;
+    int32_t count = 0;
     for (size_t i = 0; i < raw.size(); ++i) {
       unsigned char c = raw[i];
       auto it = table.find(c);
-      for (size_t j = 0; j < (it->second).size(); ++j) {
-        buf = buf | ((it->second)[j] << (CHAR_SIZE - count - 1));
-        ++count;
-        if (count == CHAR_SIZE) {
+      size_t size_of_path = it->second.size();
+      size_t j = 0;
+      while (j < size_of_path) {
+        while (j < size_of_path && count < CHAR_SIZE) {
+          buf = buf | ((it->second)[j] << (CHAR_SIZE - count - 1));
+          ++j;
+          ++count;
+        }
+        if (CHAR_SIZE == count) {
           count = 0;
           encoded.push_back(buf);
           buf = 0;
@@ -34,14 +39,15 @@ namespace Codecs {
     encoded.push_back(static_cast<unsigned char>(count));
   }
 
+
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
     uint8_t count = 0;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
+    size_t encoded_size = static_cast<int64_t>(encoded.size()) - 2;
     size_t i = 0;
-    while (i < encoded.size() - 1) {
-      bool flag = byte & (1 << (CHAR_SIZE - count - 1));
-      if (flag) {
+    while (i < encoded_size + 1) {
+      if (byte & (1 << (CHAR_SIZE - count - 1))) {
         cur = cur->right;
       } else {
         cur = cur->left;
@@ -51,7 +57,7 @@ namespace Codecs {
         cur = root_for_decode;
       }
       ++count;
-      if (count == CHAR_SIZE || (i == encoded.size() - 2 && encoded[i + 1] == count)) {
+      if (count == CHAR_SIZE || (i == encoded_size && encoded[i + 1] == count)) {
         count = 0;
         ++i;
         byte = encoded[i];
@@ -126,7 +132,7 @@ namespace Codecs {
   void HuffmanCodec::learn(const StringViewVector& sample) {
     size_t total_count = 0;
 
-    for (int c = 0; c < (1 << CHAR_SIZE); ++c) {
+    for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
       chars.insert({static_cast<unsigned char>(c), 0});
     }
 
@@ -144,9 +150,9 @@ namespace Codecs {
       Node *p = new Node(it->first, it->second);
       table_cur.push_back(p);
     }
-
+    auto it = table_cur.begin();
     while (table_cur.size() != 1) {
-      std::stable_sort(table_cur.begin(), table_cur.end(), comp);
+      std::stable_sort(it, table_cur.end(), comp);
       Node *left_son = table_cur.back();
       table_cur.pop_back();
       Node *right_son = table_cur.back();
