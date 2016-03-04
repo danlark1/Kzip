@@ -96,6 +96,10 @@ void Tester::test_decode() {
   for (auto& cur_string : this->encoded_data) {
     std::string out;
     //this->codec->decode_current_machine(out, cur_string);
+    if (cur_string.size() == 1) {
+      this->decoded_data.push_back(out);
+      continue;
+    }
     this->codec->decode(out, cur_string);
     this->decoded_data.push_back(out);
   } 
