@@ -11,10 +11,10 @@ class Node {
 public:
   Node_type type;
   int frequency;
-  char data;
+  unsigned char data;
   Node* left;
   Node* right;
-  Node(char d, int s, Node_type = LEAF); // Construct a list
+  Node(unsigned char d, int s, Node_type = LEAF); // Construct a list
   Node(Node* l, Node* r, Node_type = BIND); // Construct a bind node
   ~Node();
   int getFrequency();
