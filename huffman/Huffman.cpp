@@ -17,12 +17,11 @@ namespace Codecs {
     size_t count = 0;
     for (size_t i = 0; i < raw.size(); ++i) {
       unsigned char c = raw[i];
-      auto it = table.find(c);
-      size_t size_of_path = it->second.size();
+      size_t size_of_path = table[c].size();
       size_t j = 0;
       while (j < size_of_path) {
         while (j < size_of_path && count < CHAR_SIZE) {
-          buf = buf | ((it->second)[j] << (CHAR_SIZE - count - 1));
+          buf = buf | (table[c][j] << (CHAR_SIZE - count - 1));
           ++j;
           ++count;
         }
@@ -85,8 +84,8 @@ namespace Codecs {
 
   string HuffmanCodec::save() const {
     std::ofstream output("config");
-    for (auto it = chars.begin(); it != chars.end(); ++it) {
-      output << static_cast<uint16_t>(it->first) << " " << it->second << std::endl;
+    for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
+      output << static_cast<uint16_t>(c) << " " << chars[c] << std::endl;
     }
     output.close();
     return string();
@@ -103,8 +102,8 @@ namespace Codecs {
       Build_table(root_for_table->right, code);
     }
 
-    if (root_for_table->left == nullptr && root_for_table->left == nullptr) {
-      table.insert({root_for_table->getData(), code});
+    if (root_for_table->left == root_for_table->left) {
+      table[static_cast<unsigned char>(root_for_table->getData())] = code;
     } 
 
     code.pop_back();
@@ -116,22 +115,22 @@ namespace Codecs {
       uint32_t sym;
       uint64_t cnt;
       input >> sym >> cnt;
-      chars.insert({static_cast<unsigned char>(sym), cnt});
+      chars[static_cast<unsigned char>(sym)] = cnt;
     }
 
     std::vector<Node*> table_cur;
-    for (auto it = chars.begin(); it != chars.end(); ++it) {
-      Node *p = new Node(it->first, it->second);
+    for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
+      Node* p = new Node(static_cast<unsigned char>(c), chars[c]);
       table_cur.push_back(p);
     }
 
     while (table_cur.size() != 1) {
       std::stable_sort(table_cur.begin(), table_cur.end(), comp);
-      Node *left_son = table_cur.back();
+      Node* left_son = table_cur.back();
       table_cur.pop_back();
-      Node *right_son = table_cur.back();
+      Node* right_son = table_cur.back();
       table_cur.pop_back();
-      Node *parent = new Node(left_son, right_son);
+      Node* parent = new Node(left_son, right_son);
       table_cur.push_back(parent);
     }
     root_for_decode = table_cur.front();
@@ -144,38 +143,37 @@ namespace Codecs {
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(static_cast<size_t>(10000), records_total);
+    return std::min(static_cast<size_t>(1000), records_total);
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
     size_t total_count = 0;
-
+    table = new std::vector<bool>[1 << CHAR_SIZE];
+    chars = new uint32_t[1 << CHAR_SIZE];
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
-      chars.insert({static_cast<unsigned char>(c), 0});
+      chars[c] = 0;
+      table[c] = {};
     }
 
     for (auto& cur_string : sample) {
       total_count += cur_string.size();
       for (auto& one_char : cur_string) {
-        auto iterator = chars.find(one_char);
-        if (iterator != chars.end()) {
-          ++(iterator->second);
-        }
+        ++chars[static_cast<uint32_t>(one_char)];
       }
     }
     std::vector<Node*> table_cur;
-    for (auto it = chars.begin(); it != chars.end(); ++it) {
-      Node *p = new Node(it->first, it->second);
+    for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
+      Node* p = new Node(static_cast<unsigned char>(c), chars[c]);
       table_cur.push_back(p);
     }
     auto it = table_cur.begin();
     while (table_cur.size() != 1) {
       std::stable_sort(it, table_cur.end(), comp);
-      Node *left_son = table_cur.back();
+      Node* left_son = table_cur.back();
       table_cur.pop_back();
-      Node *right_son = table_cur.back();
+      Node* right_son = table_cur.back();
       table_cur.pop_back();
-      Node *parent = new Node(left_son, right_son);
+      Node* parent = new Node(left_son, right_son);
       table_cur.push_back(parent);
     }
     root_for_encode = table_cur.front();
@@ -187,7 +185,7 @@ namespace Codecs {
   }
 
   void HuffmanCodec::reset() {
-    table.clear();
-    chars.clear();
+    delete[] table;
+    delete[] chars;
   }
 }  // namespace Codecs
