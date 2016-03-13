@@ -102,7 +102,7 @@ namespace Codecs {
       Build_table(root_for_table->right, code);
     }
 
-    if (root_for_table->left == root_for_table->left) {
+    if (root_for_table->left == root_for_table->right) {
       table[static_cast<unsigned char>(root_for_table->getData())] = code;
     } 
 
@@ -143,7 +143,7 @@ namespace Codecs {
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(static_cast<size_t>(1000), records_total);
+    return std::min(static_cast<size_t>(10000), records_total);
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
@@ -158,7 +158,7 @@ namespace Codecs {
     for (auto& cur_string : sample) {
       total_count += cur_string.size();
       for (auto& one_char : cur_string) {
-        ++chars[static_cast<uint32_t>(one_char)];
+        ++chars[static_cast<int32_t>(static_cast<unsigned char>(one_char))];
       }
     }
     std::vector<Node*> table_cur;
