@@ -1,6 +1,6 @@
 #include "Node.h"
 
-Node::Node(char d, int s, Node_type t) { //make a leaf
+Node::Node(unsigned char d, int s, Node_type t) { //make a leaf
   type = t;
   data = d;
   frequency = s;
