@@ -14,6 +14,10 @@ void Tester::learn_codec() {
   StringViewVector sample;
   select_sample(sample, this->data.begin(), this->data.end(), this->codec->sample_size(this->data.size()));
   double start = clock();
+  std::ofstream ou("out.txt");
+  for (const auto& cur_string: sample) {
+    ou << cur_string << '\n';
+  }
   this->codec->learn(sample);
   double finish =  clock();
   std::cout << "learning is successful in " << (finish - start) / CLOCKS_PER_SEC << std::endl;
