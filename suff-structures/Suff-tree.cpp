@@ -1,7 +1,9 @@
 #include <map>
-#include <algorithm>
 #include <cstdio>
 #include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
 
 
 //positions are characterized by the vertex and how many
@@ -28,7 +30,7 @@ struct Node {
 
 class suff_tree {
 public:
-  suff_tree(std::string& str) {
+  suff_tree(const std::string& str) {
     s = str;
     n = str.size();
 
@@ -54,8 +56,20 @@ public:
 
   void solve() {
     dfs(0);
+    std::vector<std::pair<int32_t, int32_t> > p;
     for (size_t i = 1; i < st.size(); ++i) {
-      std::cout << s.substr(st[i].right - sum_str[i], sum_str[i]) << " " << num_of_lists[i] << std::endl;
+      p.push_back({num_of_lists[i], i});
+    }
+    sort(p.begin(), p.end());
+    int32_t k = 0, i = p.size() - 1;
+    while (i >= 0 && k <= 100000) {
+      if (sum_str[p[i].second] >= 20) {
+        --i;
+        continue;
+      }
+      k += sum_str[p[i].second];
+      std::cout << s.substr(st[p[i].second].right - sum_str[p[i].second], sum_str[p[i].second]) << " " << num_of_lists[p[i].second] << std::endl;
+      --i; 
     }
   }
 
@@ -75,7 +89,7 @@ private:
   size_t n;
 
   //length of an edge
-  int32_t get_length(int32_t v) {
+  int32_t get_length(const int32_t v) const {
     return (st[v].right - st[v].left);
   }
 
@@ -112,7 +126,7 @@ private:
     }
   }
 
-  int32_t split(Position pos) {
+  int32_t split(const Position pos) {
     if (pos.len_up == get_length(pos.vertex)) {
       return pos.vertex;
     }
@@ -129,7 +143,7 @@ private:
     return cur - 1;
   }
 
-  int32_t get_link(int32_t v) {
+  int32_t get_link(const int32_t v) {
     if (st[v].link != -1) {
       return st[v].link;
     }
@@ -142,7 +156,7 @@ private:
     return returned;
   }
 
-  Position extend_ukkonen(Position ptr, int32_t i) {
+  Position extend_ukkonen(Position ptr, const int32_t i) {
     while (true) {
       //almost nullptr, but it is not nullptr in some cases
       Position nulptr = go(ptr, i, i + 1);
@@ -199,8 +213,10 @@ int main() {
   std::ios_base::sync_with_stdio(0);
   freopen("input.txt", "r", stdin);
   freopen("output.txt", "w", stdout);
-  std::string str;
-  std::cin >> str;
+  std::string str, s;
+  while (std::cin >> s) {
+    str += s + " ";
+  }
   str.push_back('$');
   //build tree
   suff_tree tree(str);
