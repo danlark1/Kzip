@@ -23,8 +23,8 @@ namespace Codecs {
   private:
     Node* root_for_encode;
     Node* root_for_decode;
-    std::unordered_map<unsigned char, uint32_t> chars;
-    std::unordered_map<unsigned char, std::vector<bool> > table;
+    uint32_t* chars;
+    std::vector<bool>* table;
     void Build_table(Node* root, std::vector<bool>& code);
   };
 
