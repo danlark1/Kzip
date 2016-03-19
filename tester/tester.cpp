@@ -14,12 +14,8 @@ void Tester::learn_codec() {
   StringViewVector sample;
   select_sample(sample, this->data.begin(), this->data.end(), this->codec->sample_size(this->data.size()));
   double start = clock();
-  std::ofstream ou("out.txt");
-  for (const auto& cur_string: sample) {
-    ou << cur_string << '\n';
-  }
   this->codec->learn(sample);
-  double finish =  clock();
+  double finish = clock();
   std::cout << "learning is successful in " << (finish - start) / CLOCKS_PER_SEC << std::endl;
 }
 
@@ -60,7 +56,7 @@ void Tester::read_decoded_file(const std::string& from) {
   conf >> n;
   for (size_t i = 0; i < n; ++i) {
     uint32_t input_config;
-    std::string out = "", cur_string ="";
+    std::string out = "", cur_string = "";
     conf >> input_config;
     int64_t j = 0;
     while (j - 1 != input_config) {
@@ -73,6 +69,8 @@ void Tester::read_decoded_file(const std::string& from) {
     encoded_data.push_back(out);
   }
   this->codec->load("config");
+  input.close();
+  conf.close();
 }
 
 void Tester::save_config() {
@@ -117,20 +115,26 @@ void Tester::save_info() {
   for (auto& cur_string : encoded_data) {
     out << cur_string.size() << '\n';
   } 
+  out.close();
 }
 
 void Tester::check_correctness() {
+  //std::ofstream output("errors", std::ios_base::binary);
+
   int error_count = 0;
   if (this->data.size() != this->decoded_data.size()) {
-    std::cout << "Sizes don't match" << std::endl;
+    //std::cout << "Sizes don't match" << std::endl;
     return;
   }
   auto data_it = this->data.begin();
   auto decoded_it = this->decoded_data.begin();
+  int64_t i = 0;
   while (data_it != this->data.end() && decoded_it != this->decoded_data.end()) {
     if (*data_it != *decoded_it) {
+      //output << *data_it << '\n' << *decoded_it << std::endl;
       ++error_count;
     }
+    ++i;
     ++data_it;
     ++decoded_it;
   }
@@ -141,17 +145,25 @@ void Tester::check_correctness() {
 void Tester::saved_memory() {
   int64_t saved = 0;
   if (this->data.size() != this->decoded_data.size()) {
-    std::cout << "Sizes don't match" << std::endl;
+    //std::cout << "Sizes don't match" << std::endl;
     return;
   }
   auto data_it = this->data.begin();
   auto encoded_it = this->encoded_data.begin();
   while (data_it != this->data.end() && encoded_it != this->encoded_data.end()) {
-    saved += (data_it->size() - encoded_it->size());
+    saved += static_cast<int64_t>((data_it->size() - encoded_it->size()));
     ++data_it;
     ++encoded_it;
   }
-  std::cout << "Memory saved (bytes): " << saved << std::endl;
+  //std::cout << "Memory saved (bytes): " << saved << std::endl;
   std::cout << "Memory saved (MBs): " << 1.0 * saved / 1024 / 1024 << std::endl;
 }
 
+void Tester::reset() {
+  this->data.clear();
+  this->data.shrink_to_fit();
+  this->decoded_data.clear();
+  this->decoded_data.shrink_to_fit();
+  this->encoded_data.clear();
+  this->encoded_data.shrink_to_fit();
+}

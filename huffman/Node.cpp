@@ -4,8 +4,8 @@ Node::Node(unsigned char d, int s, Node_type t) { //make a leaf
   type = t;
   data = d;
   frequency = s;
-  left = NULL;
-  right = NULL;
+  left = nullptr;
+  right = nullptr;
 }
 
 Node::Node(Node* l, Node* r, Node_type t) { //make a bind

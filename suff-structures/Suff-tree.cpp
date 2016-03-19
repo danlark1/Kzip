@@ -68,7 +68,7 @@ public:
         continue;
       }
       k += sum_str[p[i].second];
-      std::cout << s.substr(st[p[i].second].right - sum_str[p[i].second], sum_str[p[i].second]) << " " << num_of_lists[p[i].second] << std::endl;
+      //std::cout << s.substr(st[p[i].second].right - sum_str[p[i].second], sum_str[p[i].second]) << " " << num_of_lists[p[i].second] << std::endl;
       --i; 
     }
   }
@@ -151,7 +151,8 @@ private:
       return 0;
     }
     int32_t to = get_link(st[v].parent);
-    int32_t returned = split(go(Position(to, get_length(to)), st[v].left + (st[v].parent == 0 ? 1 : 0), st[v].right));
+    int32_t returned = split(go(Position(to, get_length(to)), st[v].left + 
+                                      (st[v].parent == 0 ? 1 : 0), st[v].right));
     st[v].link = returned;
     return returned;
   }
@@ -212,7 +213,7 @@ private:
 int main() {
   std::ios_base::sync_with_stdio(0);
   freopen("input.txt", "r", stdin);
-  freopen("output.txt", "w", stdout);
+  //freopen("output.txt", "w", stdout);
   std::string str, s;
   while (std::cin >> s) {
     str += s + " ";

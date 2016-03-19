@@ -13,15 +13,15 @@ namespace Codecs {
   }
 
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
+    encoded.reserve(2 * raw.size());
     unsigned char buf = 0;
     size_t count = 0;
-    for (size_t i = 0; i < raw.size(); ++i) {
-      unsigned char c = raw[i];
-      size_t size_of_path = table[c].size();
-      size_t j = 0;
+    size_t j = 0;
+    for (size_t i = 0; i < raw.size(); ++i, j = 0) {
+      size_t size_of_path = table[static_cast<uint8_t>(raw[i])].size();
       while (j < size_of_path) {
         while (j < size_of_path && count < CHAR_SIZE) {
-          buf = buf | (table[c][j] << (CHAR_SIZE - count - 1));
+          buf ^= (bit_shifts[table[static_cast<uint8_t>(raw[i])][j]][(CHAR_SIZE - count - 1)]);
           ++j;
           ++count;
         }
@@ -36,10 +36,12 @@ namespace Codecs {
       encoded.push_back(buf);
     }
     encoded.push_back(static_cast<unsigned char>(count));
+    // encoded.shrink_to_fit();
   }
 
 
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
+    raw.reserve(2 * encoded.size());
     int64_t count = 0;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
@@ -104,7 +106,7 @@ namespace Codecs {
 
     if (root_for_table->left == root_for_table->right) {
       table[static_cast<unsigned char>(root_for_table->getData())] = code;
-    } 
+    }
 
     code.pop_back();
   }
@@ -143,10 +145,17 @@ namespace Codecs {
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(static_cast<size_t>(10000), records_total);
+    return std::min(static_cast<size_t>(100000), records_total);
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
+    bit_shifts = new int32_t*[2];
+    for (size_t i = 0; i < 2; ++i) {
+      bit_shifts[i] = new int32_t[CHAR_SIZE];
+      for (size_t j = 0; j < CHAR_SIZE; ++j) {
+        bit_shifts[i][j] = (i == 0 ? 0 : i << j);
+      }
+    }
     size_t total_count = 0;
     table = new std::vector<bool>[1 << CHAR_SIZE];
     chars = new uint32_t[1 << CHAR_SIZE];
@@ -187,5 +196,7 @@ namespace Codecs {
   void HuffmanCodec::reset() {
     delete[] table;
     delete[] chars;
+    delete[] bit_shifts[0];
+    delete[] bit_shifts[1];
   }
 }  // namespace Codecs
