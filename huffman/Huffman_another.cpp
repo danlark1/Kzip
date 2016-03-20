@@ -18,11 +18,14 @@ namespace Codecs {
     int8_t count = CHAR_SIZE;
     size_t j = 0;
     for (size_t i = 0; i < raw.size(); ++i, j = 0) {
-      size_t size_of_path = table[static_cast<uint8_t>(raw[i])].size();
+    size_t size_of_path = table[static_cast<uint8_t>(raw[i])].size();
 
       while (j < size_of_path) {
         while (j < size_of_path && count) {
-          buf ^= (bit_shifts[table[static_cast<uint8_t>(raw[i])][j]][(count - 1)]);
+          buf <<= 1;
+          if (table[static_cast<uint8_t>(raw[i])][j]) {
+            ++buf;
+          }
           ++j;
           --count;
         }
@@ -34,7 +37,7 @@ namespace Codecs {
       }
     }
     if (count != CHAR_SIZE) {
-      encoded.push_back(buf);
+      encoded.push_back(buf << count);
     }
     encoded.push_back(static_cast<unsigned char>(CHAR_SIZE - count));
   }
@@ -146,13 +149,6 @@ namespace Codecs {
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
-    bit_shifts = new int32_t*[2];
-    for (size_t i = 0; i < 2; ++i) {
-      bit_shifts[i] = new int32_t[CHAR_SIZE];
-      for (size_t j = 0; j < CHAR_SIZE; ++j) {
-        bit_shifts[i][j] = (i == 0 ? 0 : i << j);
-      }
-    }
     size_t total_count = 0;
     table = new std::vector<bool>[1 << CHAR_SIZE];
     chars = new uint32_t[1 << CHAR_SIZE];
@@ -221,7 +217,5 @@ namespace Codecs {
   void HuffmanCodec::reset() {
     delete[] table;
     delete[] chars;
-    delete[] bit_shifts[0];
-    delete[] bit_shifts[1];
   }
 }  // namespace Codecs

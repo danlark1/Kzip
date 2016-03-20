@@ -22,7 +22,6 @@ namespace Codecs {
   private:
     Node* root_for_encode;
     Node* root_for_decode;
-    int32_t** bit_shifts;
     uint32_t* chars;
     std::vector<bool>* table;
     void Build_table(Node* root, std::vector<bool>& code);
