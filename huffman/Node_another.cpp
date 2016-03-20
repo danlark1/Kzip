@@ -1,4 +1,4 @@
-#include "Node.h"
+#include "Node_another.h"
 
 Node::Node(unsigned char d, int64_t s, Node_type t) { //make a leaf
   type = t;
@@ -6,6 +6,9 @@ Node::Node(unsigned char d, int64_t s, Node_type t) { //make a leaf
   frequency = s;
   left = nullptr;
   right = nullptr;
+  for (size_t i = 0; i < (1 << CHAR_SIZE); ++i) {
+    to_go.push_back({"", nullptr});
+  }
 }
 
 Node::Node(Node* l, Node* r, Node_type t) { //make a bind
@@ -13,7 +16,10 @@ Node::Node(Node* l, Node* r, Node_type t) { //make a bind
   data = 0;
   frequency = l->getFrequency() + r->getFrequency();
   left = l;
-  right = r;
+  right = r;  
+  for (size_t i = 0; i < (1 << CHAR_SIZE); ++i) {
+    to_go.push_back({"", nullptr});
+  }
 }
 
 Node::~Node() {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "codec.h"
-#include "Node.h"
+#include "Node_another.h"
 #include <unordered_map>
 #include <list>
 #include <climits>
@@ -26,6 +26,7 @@ namespace Codecs {
     uint32_t* chars;
     std::vector<bool>* table;
     void Build_table(Node* root, std::vector<bool>& code);
+    void build_jumps(Node* a);
   };
 
 } 

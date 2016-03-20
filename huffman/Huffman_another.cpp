@@ -1,5 +1,5 @@
-#include "Huffman.h"
-#include "Node.h"
+#include "Huffman_another.h"
+#include "Node_another.h"
 #include <iostream>
 #include <fstream>
 #include <list>
@@ -41,6 +41,9 @@ namespace Codecs {
 
 
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
+    if (encoded.size() == 1) {
+      return;
+    }
     raw.reserve(2 * encoded.size());
     int64_t count = 0;
     Node* cur = root_for_decode;
@@ -49,17 +52,8 @@ namespace Codecs {
 
     //till almost the last element
     for (int64_t i = 0; i < encoded_size; ++i) {
-      for (size_t j = 0; j < CHAR_SIZE; ++j) {
-        if (byte & (1 << (CHAR_SIZE - j - 1))) {
-          cur = cur->right;
-        } else {
-          cur = cur->left;
-        }
-        if (!cur->left) { //is equal to cur->left == nullptr == cur->right
-          raw.push_back(cur->getData());
-          cur = root_for_decode;
-        }
-      }
+      raw += cur->to_go[byte].first;
+      cur = cur->to_go[byte].second;
       byte = encoded[i + 1];
     }
 
@@ -142,6 +136,9 @@ namespace Codecs {
     std::vector<bool> code;
     Build_table(root_for_table, code);
     code.clear();
+
+    root_for_table = root_for_decode;
+    build_jumps(root_for_table);
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
@@ -191,6 +188,34 @@ namespace Codecs {
     std::vector<bool> code;
     Build_table(root_for_table, code);
     code.clear();
+
+  }
+
+  void HuffmanCodec::build_jumps(Node* node) {
+    Node* cur;
+    for (size_t byte = 0; byte < (1 << CHAR_SIZE); ++byte) {
+      cur = node;
+      if (!cur->right || !cur->left) {
+        // cur = root_for_decode;
+        continue;
+      }
+      for (size_t j = 0; j < CHAR_SIZE; ++j) {
+        if (byte & (1 << (CHAR_SIZE - j - 1))) {
+          cur = cur->right;
+        } else {
+          cur = cur->left;
+        }
+        if (!cur->left) { //is equal to cur->left == nullptr == cur->right
+          node->to_go[byte].first.push_back(cur->getData());
+          cur = root_for_decode;
+        }
+      }
+      node->to_go[byte].second = cur;
+    }
+    if (node->left != nullptr) {
+      build_jumps(node->left);
+      build_jumps(node->right);
+    }
   }
 
   void HuffmanCodec::reset() {
