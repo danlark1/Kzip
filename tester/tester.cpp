@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <ctime>
+#include <cstdio>
 #include "tester.h"
 
 template <typename Iter>
@@ -16,19 +17,19 @@ void Tester::learn_codec() {
   double start = clock();
   this->codec->learn(sample);
   double finish = clock();
-  std::cout << "learning is successful in " << (finish - start) / CLOCKS_PER_SEC << std::endl;
+  printf("learning is successful in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
 void Tester::readfile(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
-  this->data.clear();
-  while(input.good()) {
-    std::string cur_string;
+  // this->data.clear();
+  while(!input.eof()) {
+    std::string cur_string = "";
     getline(input, cur_string);
     this->data.push_back(cur_string);
   }
   input.close();
-  std::cout << this->data.size() << " strings were read" << std::endl;
+  printf("%zu strings were read\n", this->data.size());
 }
 
 void Tester::write_encoded_file(const std::string& where_to) {
@@ -68,7 +69,6 @@ void Tester::read_decoded_file(const std::string& from) {
     out.pop_back();
     encoded_data.push_back(out);
   }
-  this->codec->load("config");
   input.close();
   conf.close();
 }
@@ -90,23 +90,25 @@ void Tester::test_encode() {
     this->encoded_data.push_back(out);
   }
   double finish = 1.0 * clock();
-  std::cout << "encode ended in " << (finish - start) / CLOCKS_PER_SEC << std::endl;
+  printf("encode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
 void Tester::test_decode() {
+  this->codec->load("config");
+
   double start = 1.0 * clock();
   for (auto& cur_string : this->encoded_data) {
     std::string out;
     //this->codec->decode_current_machine(out, cur_string);
-    if (cur_string.size() == 1) {
-      this->decoded_data.push_back(out);
-      continue;
-    }
+    // if (cur_string.size() == 1) {
+    //   this->decoded_data.push_back(out);
+    //   continue;
+    // }
     this->codec->decode(out, cur_string);
     this->decoded_data.push_back(out);
   } 
   double finish = 1.0 * clock();
-  std::cout << "decode ended in " << (finish - start) / CLOCKS_PER_SEC << std::endl;
+  printf("decode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
 void Tester::save_info() {
@@ -119,11 +121,9 @@ void Tester::save_info() {
 }
 
 void Tester::check_correctness() {
-  //std::ofstream output("errors", std::ios_base::binary);
 
-  int error_count = 0;
+  int64_t error_count = 0;
   if (this->data.size() != this->decoded_data.size()) {
-    //std::cout << "Sizes don't match" << std::endl;
     return;
   }
   auto data_it = this->data.begin();
@@ -131,15 +131,15 @@ void Tester::check_correctness() {
   int64_t i = 0;
   while (data_it != this->data.end() && decoded_it != this->decoded_data.end()) {
     if (*data_it != *decoded_it) {
-      //output << *data_it << '\n' << *decoded_it << std::endl;
       ++error_count;
+      std::cout << *data_it << " " << *decoded_it << std::endl;
     }
     ++i;
     ++data_it;
     ++decoded_it;
   }
-  double perc_errors = 100.0 * error_count / (int)this->data.size();
-  std::cout << perc_errors << "% errors were occured" << std::endl;
+  double perc_errors = 100.0 * error_count / (int64_t)this->data.size();
+  printf("%f percent errors were occured\n", perc_errors);
 }
 
 void Tester::saved_memory() {
@@ -156,7 +156,7 @@ void Tester::saved_memory() {
     ++encoded_it;
   }
   //std::cout << "Memory saved (bytes): " << saved << std::endl;
-  std::cout << "Memory saved (MBs): " << 1.0 * saved / 1024 / 1024 << std::endl;
+  printf("Memory saved (MBs): %f\n", 1.0 * saved / 1024 / 1024);
 }
 
 void Tester::reset() {

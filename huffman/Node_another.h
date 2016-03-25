@@ -22,5 +22,5 @@ public:
   Node(Node* l, Node* r, Node_type = BIND); // Construct a bind node
   ~Node();
   int64_t getFrequency();
-  char getData();
+  unsigned char getData();
 };

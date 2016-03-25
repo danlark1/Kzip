@@ -1,4 +1,5 @@
 #include "Node_another.h"
+#include <cstdio>
 
 Node::Node(unsigned char d, int64_t s, Node_type t) { //make a leaf
   type = t;
@@ -23,14 +24,15 @@ Node::Node(Node* l, Node* r, Node_type t) { //make a bind
 }
 
 Node::~Node() {
-  delete left;
-  delete right;
+  this->to_go.clear();
+  delete this->left;
+  delete this->right;
 }
 
 int64_t Node::getFrequency() { //frequency of a node
   return frequency;
 }
 
-char Node::getData() {
+unsigned char Node::getData() {
   return data;
 }
