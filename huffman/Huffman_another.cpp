@@ -1,8 +1,6 @@
 #include "Huffman_another.h"
 #include "Node_another.h"
-#include <iostream>
 #include <fstream>
-#include <list>
 #include <algorithm>
 
 namespace Codecs {
@@ -22,7 +20,7 @@ namespace Codecs {
       while (j < size_of_path) {
         while (j < size_of_path && count) {
           buf <<= 1;
-          buf += table[static_cast<uint8_t>(raw[i])][j];
+          buf += static_cast<uint8_t>(table[static_cast<uint8_t>(raw[i])][j]);
           ++j;
           --count;
         }
@@ -41,11 +39,11 @@ namespace Codecs {
 
 
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
-    if (encoded.size() == 1) {
+    if (__builtin_expect(encoded.size() == 1, false)) {
       return;
     }
     raw.reserve(2 * encoded.size());
-    int64_t count = 0;
+    int8_t count = 0;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
     int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 2;
@@ -99,7 +97,7 @@ namespace Codecs {
     }
 
     if (root_for_table->left == root_for_table->right) {
-      table[static_cast<uint8_t>(root_for_table->getData())] = code;
+      table[root_for_table->getData()] = code;
     }
 
     code.pop_back();
@@ -154,9 +152,9 @@ namespace Codecs {
       table[c] = "";
     }
 
-    for (auto& cur_string : sample) {
+    for (const auto& cur_string : sample) {
       total_count += cur_string.size();
-      for (auto& one_char : cur_string) {
+      for (const auto& one_char : cur_string) {
         ++chars[static_cast<int32_t>(static_cast<uint8_t>(one_char))];
       }
     }
