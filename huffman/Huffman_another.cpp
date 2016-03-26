@@ -20,7 +20,7 @@ namespace Codecs {
       while (j < size_of_path) {
         while (j < size_of_path && count) {
           buf <<= 1;
-          buf += static_cast<uint8_t>(table[static_cast<uint8_t>(raw[i])][j]);
+          buf += table[static_cast<uint8_t>(raw[i])][j];
           ++j;
           --count;
         }
@@ -155,7 +155,7 @@ namespace Codecs {
     for (const auto& cur_string : sample) {
       total_count += cur_string.size();
       for (const auto& one_char : cur_string) {
-        ++chars[static_cast<int32_t>(static_cast<uint8_t>(one_char))];
+        ++chars[static_cast<uint8_t>(one_char)];
       }
     }
     std::vector<Node*> table_cur;
