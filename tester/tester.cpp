@@ -1,8 +1,8 @@
-#include <fstream>
-#include <iostream>
-#include <ctime>
 #include <cstdio>
+#include <ctime>
+#include <fstream>
 #include "tester.h"
+#include <iostream>
 
 template <typename Iter>
 void select_sample(StringViewVector& sample, Iter begin, Iter end,
@@ -22,10 +22,10 @@ void Tester::learn_codec() {
 
 void Tester::readfile(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
-  // this->data.clear();
-  while(!input.eof()) {
-    std::string cur_string = "";
+  while(input.good()) {
+    std::string cur_string;
     getline(input, cur_string);
+    cur_string.shrink_to_fit();
     this->data.push_back(cur_string);
   }
   input.close();
@@ -145,7 +145,6 @@ void Tester::check_correctness() {
 void Tester::saved_memory() {
   int64_t saved = 0;
   if (this->data.size() != this->decoded_data.size()) {
-    //std::cout << "Sizes don't match" << std::endl;
     return;
   }
   auto data_it = this->data.begin();
@@ -155,7 +154,6 @@ void Tester::saved_memory() {
     ++data_it;
     ++encoded_it;
   }
-  //std::cout << "Memory saved (bytes): " << saved << std::endl;
   printf("Memory saved (MBs): %f\n", 1.0 * saved / 1024 / 1024);
 }
 

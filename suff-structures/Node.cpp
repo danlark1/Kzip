@@ -1,7 +1,7 @@
 #include "Node_another.h"
 #include <cstdio>
 
-Node::Node(unsigned char d, int64_t s, Node_type t) { //make a leaf
+Node::Node(std::string d, int64_t s, Node_type t) { //make a leaf
   type = t;
   data = d;
   frequency = s;
@@ -14,7 +14,8 @@ Node::Node(unsigned char d, int64_t s, Node_type t) { //make a leaf
 
 Node::Node(Node* l, Node* r, Node_type t) { //make a bind
   type = t;
-  data = 0;
+  data = "";
+  data.shrink_to_fit();
   frequency = l->getFrequency() + r->getFrequency();
   left = l;
   right = r;  
@@ -26,6 +27,10 @@ Node::Node(Node* l, Node* r, Node_type t) { //make a bind
 Node::~Node() {
   this->to_go.clear();
   delete this->left;
+  this->left = nullptr;
+  delete this->left;
+  delete this->right;
+  this->right = nullptr;
   delete this->right;
 }
 
@@ -33,6 +38,6 @@ int64_t Node::getFrequency() { //frequency of a node
   return frequency;
 }
 
-unsigned char Node::getData() {
+std::string Node::getData() {
   return data;
 }

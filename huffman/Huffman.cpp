@@ -1,10 +1,7 @@
 #include "Huffman.h"
 #include "Node.h"
-#include <iostream>
 #include <fstream>
-#include <list>
 #include <algorithm>
-#include <unordered_map>
 
 namespace Codecs {
 
@@ -18,11 +15,12 @@ namespace Codecs {
     int8_t count = CHAR_SIZE;
     size_t j = 0;
     for (size_t i = 0; i < raw.size(); ++i, j = 0) {
-      size_t size_of_path = table[static_cast<uint8_t>(raw[i])].size();
+    size_t size_of_path = table[static_cast<uint8_t>(raw[i])].size();
 
       while (j < size_of_path) {
         while (j < size_of_path && count) {
-          buf ^= (bit_shifts[table[static_cast<uint8_t>(raw[i])][j]][(count - 1)]);
+          buf <<= 1;
+          buf += table[static_cast<uint8_t>(raw[i])][j];
           ++j;
           --count;
         }
@@ -34,32 +32,26 @@ namespace Codecs {
       }
     }
     if (count != CHAR_SIZE) {
-      encoded.push_back(buf);
+      encoded.push_back(buf << count);
     }
-    encoded.push_back(static_cast<unsigned char>(CHAR_SIZE - count));
+    encoded.push_back(static_cast<uint8_t>(CHAR_SIZE - count));
   }
 
 
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
+    if (__builtin_expect(encoded.size() == 1, false)) {
+      return;
+    }
     raw.reserve(2 * encoded.size());
-    int64_t count = 0;
+    int8_t count = 0;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
     int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 2;
 
     //till almost the last element
     for (int64_t i = 0; i < encoded_size; ++i) {
-      for (size_t j = 0; j < CHAR_SIZE; ++j) {
-        if (byte & (1 << (CHAR_SIZE - j - 1))) {
-          cur = cur->right;
-        } else {
-          cur = cur->left;
-        }
-        if (!cur->left) { //is equal to cur->left == nullptr == cur->right
-          raw.push_back(cur->getData());
-          cur = root_for_decode;
-        }
-      }
+      raw += cur->to_go[byte].first;
+      cur = cur->to_go[byte].second;
       byte = encoded[i + 1];
     }
 
@@ -93,7 +85,7 @@ namespace Codecs {
     return string();
   }
 
-  void HuffmanCodec::Build_table(Node* root_for_table, std::vector<bool>& code) {
+  void HuffmanCodec::Build_table(Node* root_for_table, std::string& code) {
     if (root_for_table->left != nullptr) {
       code.push_back(false);
       Build_table(root_for_table->left, code);
@@ -105,7 +97,7 @@ namespace Codecs {
     }
 
     if (root_for_table->left == root_for_table->right) {
-      table[static_cast<unsigned char>(root_for_table->getData())] = code;
+      table[root_for_table->getData()] = code;
     }
 
     code.pop_back();
@@ -117,12 +109,12 @@ namespace Codecs {
       uint32_t sym;
       uint64_t cnt;
       input >> sym >> cnt;
-      chars[static_cast<unsigned char>(sym)] = cnt;
+      chars[static_cast<uint8_t>(sym)] = cnt;
     }
 
     std::vector<Node*> table_cur;
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
-      Node* p = new Node(static_cast<unsigned char>(c), chars[c]);
+      Node* p = new Node(static_cast<uint8_t>(c), chars[c]);
       table_cur.push_back(p);
     }
 
@@ -139,9 +131,12 @@ namespace Codecs {
     Node* root_for_table = root_for_decode;
 
 
-    std::vector<bool> code;
+    std::string code;
     Build_table(root_for_table, code);
     code.clear();
+
+    root_for_table = root_for_decode;
+    build_jumps(root_for_table);
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
@@ -149,30 +144,23 @@ namespace Codecs {
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
-    bit_shifts = new int32_t*[2];
-    for (size_t i = 0; i < 2; ++i) {
-      bit_shifts[i] = new int32_t[CHAR_SIZE];
-      for (size_t j = 0; j < CHAR_SIZE; ++j) {
-        bit_shifts[i][j] = (i == 0 ? 0 : i << j);
-      }
-    }
     size_t total_count = 0;
-    table = new std::vector<bool>[1 << CHAR_SIZE];
+    table = new std::string[1 << CHAR_SIZE];
     chars = new uint32_t[1 << CHAR_SIZE];
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
       chars[c] = 0;
-      table[c] = {};
+      table[c] = "";
     }
 
-    for (auto& cur_string : sample) {
+    for (const auto& cur_string : sample) {
       total_count += cur_string.size();
-      for (auto& one_char : cur_string) {
-        ++chars[static_cast<int32_t>(static_cast<unsigned char>(one_char))];
+      for (const auto& one_char : cur_string) {
+        ++chars[static_cast<uint8_t>(one_char)];
       }
     }
     std::vector<Node*> table_cur;
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
-      Node* p = new Node(static_cast<unsigned char>(c), chars[c]);
+      Node* p = new Node(static_cast<uint8_t>(c), chars[c]);
       table_cur.push_back(p);
     }
     auto it = table_cur.begin();
@@ -188,15 +176,43 @@ namespace Codecs {
     root_for_encode = table_cur.front();
     Node* root_for_table = root_for_encode;
 
-    std::vector<bool> code;
+    std::string code;
     Build_table(root_for_table, code);
     code.clear();
+    code.shrink_to_fit();
+  }
+
+  void HuffmanCodec::build_jumps(Node* node) {
+    Node* cur;
+    for (size_t byte = 0; byte < (1 << CHAR_SIZE); ++byte) {
+      cur = node;
+      if (!cur->right || !cur->left) {
+        // cur = root_for_decode;
+        continue;
+      }
+      for (size_t j = 0; j < CHAR_SIZE; ++j) {
+        if (byte & (1 << (CHAR_SIZE - j - 1))) {
+          cur = cur->right;
+        } else {
+          cur = cur->left;
+        }
+        if (!cur->left) { //is equal to cur->left == nullptr == cur->right
+          node->to_go[byte].first.push_back(cur->getData());
+          cur = root_for_decode;
+        }
+      }
+      node->to_go[byte].second = cur;
+    }
+    if (node->left != nullptr) {
+      build_jumps(node->left);
+      build_jumps(node->right);
+    }
   }
 
   void HuffmanCodec::reset() {
     delete[] table;
     delete[] chars;
-    delete[] bit_shifts[0];
-    delete[] bit_shifts[1];
+    delete root_for_decode;
+    delete root_for_encode;
   }
 }  // namespace Codecs

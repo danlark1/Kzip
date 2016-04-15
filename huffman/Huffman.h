@@ -2,8 +2,6 @@
 
 #include "codec.h"
 #include "Node.h"
-#include <unordered_map>
-#include <list>
 #include <climits>
 
 namespace Codecs {
@@ -22,10 +20,10 @@ namespace Codecs {
   private:
     Node* root_for_encode;
     Node* root_for_decode;
-    int32_t** bit_shifts;
     uint32_t* chars;
-    std::vector<bool>* table;
-    void Build_table(Node* root, std::vector<bool>& code);
+    std::string* table;
+    void Build_table(Node* root, std::string& code);
+    void build_jumps(Node* a);
   };
 
 } 
