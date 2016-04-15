@@ -6,7 +6,9 @@
 Тесты на encode и decode (Intel Core i5) в секундах:
 
 data1 encode 6.1, decode 4.6
+
 data2 encode 4.75, decode 3.68
+
 data3 encode 5.9, decode 4.9
 
 Сжатие во всех 3 случаях идёт в 1.5 раза.
