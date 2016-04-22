@@ -8,14 +8,14 @@ include_directories("tester/" "huffman/" "codecs/")
 
 set(SOURCES
     main.cpp
-    huffman/Huffman.cpp
-    huffman/Node.cpp
+    huffman/Huffman_better.cpp
+    huffman/Node_better.cpp
     tester/tester.cpp)
 
 set(HEADERS
     codec/codec.h
-    huffman/Huffman.h
-    huffman/Node.h
+    huffman/Huffman_better.h
+    huffman/Node_better.h
     tester/tester.h)
 
 add_executable(tester ${SOURCES})

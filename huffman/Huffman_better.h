@@ -1,8 +1,9 @@
 #pragma once
 
 #include "codec.h"
-#include "Node.h"
+#include "Node_better.h"
 #include <climits>
+#include <unordered_map>
 
 namespace Codecs {
 
@@ -20,8 +21,8 @@ namespace Codecs {
   private:
     Node* root_for_encode;
     Node* root_for_decode;
-    uint32_t* chars;
-    std::vector<int32_t>* table;
+    std::unordered_map<std::string, uint32_t> chars;
+    std::unordered_map<std::string, std::vector<int32_t> > table;
     void Build_table(Node* root, std::vector<int32_t>& code);
     void build_jumps(Node* a);
   };

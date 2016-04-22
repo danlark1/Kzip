@@ -1,7 +1,7 @@
-#include "Node.h"
+#include "Node_better.h"
 #include <cstdio>
 
-Node::Node(unsigned char d, int64_t s, Node_type t) { //make a leaf
+Node::Node(std::string d, int64_t s, Node_type t) { //make a leaf
   type = t;
   data = d;
   frequency = s;
@@ -14,7 +14,7 @@ Node::Node(unsigned char d, int64_t s, Node_type t) { //make a leaf
 
 Node::Node(Node* l, Node* r, Node_type t) { //make a bind
   type = t;
-  data = 0;
+  data = "";
   frequency = l->getFrequency() + r->getFrequency();
   left = l;
   right = r;  
@@ -23,15 +23,17 @@ Node::Node(Node* l, Node* r, Node_type t) { //make a bind
   }
 }
 
+
+
 Node::~Node() {
   delete left;
   delete right;
 }
 
-int64_t Node::getFrequency() { //frequency of a node
+int64_t Node::getFrequency() const { //frequency of a node
   return frequency;
 }
 
-unsigned char Node::getData() {
+std::string Node::getData() const {
   return data;
 }

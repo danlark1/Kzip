@@ -15,6 +15,11 @@ void Tester::learn_codec() {
   StringViewVector sample;
   select_sample(sample, this->data.begin(), this->data.end(), this->codec->sample_size(this->data.size()));
   double start = clock();
+  std::ofstream output("a");
+  for (size_t i = 0; i < sample.size(); ++i) {
+    output << sample[i] << '\n';
+  }
+  output.close();
   this->codec->learn(sample);
   double finish = clock();
   printf("learning is successful in %f\n", (finish - start) / CLOCKS_PER_SEC);
@@ -84,10 +89,15 @@ void Tester::set_codec(Codecs::CodecIFace& codec) {
 
 void Tester::test_encode() {
   double start = 1.0 * clock();
+  int64_t i = 0;
   for (auto& cur_string : this->data) {
     std::string out;
+    ++i;
     this->codec->encode(out, cur_string);
     this->encoded_data.push_back(out);
+    if (i % 1000 == 0) {
+      printf("%zu\n", i);
+    }
   }
   double finish = 1.0 * clock();
   printf("encode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
@@ -132,7 +142,7 @@ void Tester::check_correctness() {
   while (data_it != this->data.end() && decoded_it != this->decoded_data.end()) {
     if (*data_it != *decoded_it) {
       ++error_count;
-      std::cout << *data_it << " " << *decoded_it << std::endl;
+      // std::cout << *data_it << " " << *decoded_it << std::endl;
     }
     ++i;
     ++data_it;
@@ -144,6 +154,8 @@ void Tester::check_correctness() {
 
 void Tester::saved_memory() {
   int64_t saved = 0;
+  int64_t mem1 = 0;
+  int64_t mem2 = 0;
   if (this->data.size() != this->decoded_data.size()) {
     return;
   }
@@ -151,10 +163,13 @@ void Tester::saved_memory() {
   auto encoded_it = this->encoded_data.begin();
   while (data_it != this->data.end() && encoded_it != this->encoded_data.end()) {
     saved += static_cast<int64_t>((data_it->size() - encoded_it->size()));
+    mem1 += encoded_it->size();
+    mem2 += data_it->size();
     ++data_it;
     ++encoded_it;
   }
   printf("Memory saved (MBs): %f\n", 1.0 * saved / 1024 / 1024);
+  printf("Memory saved (percents): %f %%\n", 100 - 100.0 * mem1 / mem2);
 }
 
 void Tester::reset() {
