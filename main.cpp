@@ -1,4 +1,4 @@
-#include "Huffman.h"
+#include "Huffman_better.h"
 #include "tester.h"
 #include <iostream>
 #include <fstream>
@@ -9,7 +9,7 @@ int main () {
   tester.set_codec(huffman);
 
   //path to file
-  tester.readfile("../../../DATAX/data3");
+  tester.readfile("../../DATAX/data5");
   tester.learn_codec();
   tester.test_encode();
   //tester.write_encoded_file("data1coded");

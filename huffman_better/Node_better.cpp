@@ -1,5 +1,6 @@
 #include "Node_better.h"
 #include <cstdio>
+#include <string>
 
 Node::Node(std::string d, int64_t s, Node_type t) { //make a leaf
   type = t;

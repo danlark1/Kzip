@@ -2,7 +2,11 @@
 
 #include "codec.h"
 #include "Node_better.h"
+#include "Trie.h"
+#include "Suffix_tree.h"
 #include <climits>
+#include <string>
+#include <vector>
 #include <unordered_map>
 
 namespace Codecs {
@@ -19,12 +23,13 @@ namespace Codecs {
     void learn(const StringViewVector&) override;
     void reset() override;
   private:
+    Trie* trie;
+    suff_tree* tree;
     Node* root_for_encode;
     Node* root_for_decode;
-    std::unordered_map<std::string, uint32_t> chars;
-    std::unordered_map<std::string, std::vector<int32_t> > table;
+    std::vector<std::pair<std::string, int64_t> > ans;
     void Build_table(Node* root, std::vector<int32_t>& code);
     void build_jumps(Node* a);
   };
 
-} 
+}

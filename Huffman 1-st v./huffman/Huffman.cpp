@@ -73,7 +73,6 @@ namespace Codecs {
         break;
       } 
     }
-
   }
 
   string HuffmanCodec::save() const {
@@ -130,10 +129,6 @@ namespace Codecs {
     root_for_decode = table_cur.front();
     Node* root_for_table = root_for_decode;
 
-
-    std::vector<int32_t> code;
-    Build_table(root_for_table, code);
-    code.clear();
 
     root_for_table = root_for_decode;
     build_jumps(root_for_table);

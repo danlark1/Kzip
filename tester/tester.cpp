@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <ctime>
+#include <vector>
+#include <string>
 #include <fstream>
 #include "tester.h"
 #include <iostream>
@@ -15,11 +17,6 @@ void Tester::learn_codec() {
   StringViewVector sample;
   select_sample(sample, this->data.begin(), this->data.end(), this->codec->sample_size(this->data.size()));
   double start = clock();
-  std::ofstream output("a");
-  for (size_t i = 0; i < sample.size(); ++i) {
-    output << sample[i] << '\n';
-  }
-  output.close();
   this->codec->learn(sample);
   double finish = clock();
   printf("learning is successful in %f\n", (finish - start) / CLOCKS_PER_SEC);
@@ -89,8 +86,10 @@ void Tester::set_codec(Codecs::CodecIFace& codec) {
 
 void Tester::test_encode() {
   double start = 1.0 * clock();
+  size_t i = 0;
   for (auto& cur_string : this->data) {
     std::string out;
+    ++i;
     this->codec->encode(out, cur_string);
     this->encoded_data.push_back(out);
   }
@@ -129,10 +128,13 @@ void Tester::check_correctness() {
   auto data_it = this->data.begin();
   auto decoded_it = this->decoded_data.begin();
   int64_t i = 0;
+  std::ofstream errors("c", std::ios_base::binary);
   while (data_it != this->data.end() && decoded_it != this->decoded_data.end()) {
     if (*data_it != *decoded_it) {
       ++error_count;
-      // std::cout << *data_it << " " << *decoded_it << std::endl;
+      if (error_count < 10) {
+        errors << *data_it << "\n" << *decoded_it << std::endl;
+      }
     }
     ++i;
     ++data_it;
