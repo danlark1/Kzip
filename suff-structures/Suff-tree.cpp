@@ -58,6 +58,7 @@ public:
 
   void solve() {
     dfs(0);
+    // std::ofstream output("output.txt", std::ios_base::binary);
     std::vector<std::pair<int32_t, int32_t> > p;
     for (size_t i = 1; i < st.size(); ++i) {
       p.push_back({num_of_lists[i], i});
@@ -76,6 +77,7 @@ public:
         sum_str[p[i].second]) << " " << num_of_lists[p[i].second] << std::endl;
       --i; 
     }
+    // output.close();
   }
 
 
@@ -216,7 +218,6 @@ private:
 };
 
 int main() {
-  std::ios_base::sync_with_stdio(0);
   std::string str, s;
   std::ifstream input("input.txt", std::ios_base::binary);
   while(input.good()) {
@@ -224,7 +225,7 @@ int main() {
     getline(input, cur_string);
     str += cur_string;
   }
-  freopen("output.txt", "w", stdout);
+  
   str.push_back('$');
   //build tree
   suff_tree tree(str);

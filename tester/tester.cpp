@@ -89,15 +89,10 @@ void Tester::set_codec(Codecs::CodecIFace& codec) {
 
 void Tester::test_encode() {
   double start = 1.0 * clock();
-  int64_t i = 0;
   for (auto& cur_string : this->data) {
     std::string out;
-    ++i;
     this->codec->encode(out, cur_string);
     this->encoded_data.push_back(out);
-    if (i % 1000 == 0) {
-      printf("%zu\n", i);
-    }
   }
   double finish = 1.0 * clock();
   printf("encode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
@@ -109,11 +104,6 @@ void Tester::test_decode() {
   double start = 1.0 * clock();
   for (auto& cur_string : this->encoded_data) {
     std::string out;
-    //this->codec->decode_current_machine(out, cur_string);
-    // if (cur_string.size() == 1) {
-    //   this->decoded_data.push_back(out);
-    //   continue;
-    // }
     this->codec->decode(out, cur_string);
     this->decoded_data.push_back(out);
   } 
@@ -169,7 +159,7 @@ void Tester::saved_memory() {
     ++encoded_it;
   }
   printf("Memory saved (MBs): %f\n", 1.0 * saved / 1024 / 1024);
-  printf("Memory saved (percents): %f %%\n", 100 - 100.0 * mem1 / mem2);
+  printf("Memory saved (percent): %f %%\n", 100 - 100.0 * mem1 / mem2);
 }
 
 void Tester::reset() {
