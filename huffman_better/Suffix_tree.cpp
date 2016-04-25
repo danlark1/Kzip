@@ -6,8 +6,9 @@
 #include <string>
 #include <cmath>
 #include <fstream>
+#include <utility>
 #include <iostream>
-  
+
 suff_tree::suff_tree(const std::string& str) {
   s = str;
   n = str.size();
@@ -45,15 +46,23 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr() {
   stable_sort(p.begin(), p.end());
   int32_t k = 0, i = p.size() - 1;
   int j = 0;
+  bool flag = false;
   std::vector<std::pair<std::string, int64_t> > ans;
   while (j <= 5000 && i >= 0 && k <= 100000) {
-    if (sum_str[p[i].second] >= 16) {
+    flag = false;
+    for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; pop < st[p[i].second].right; ++pop) {
+      if (s[pop] == '\0') {
+        flag = true;
+        break;
+      }
+    }
+    if (flag) {
       --i;
       continue;
     }
     ++j;
     k += sum_str[p[i].second];
-    ans.push_back({s.substr(st[p[i].second].right - sum_str[p[i].second], 
+    ans.push_back({s.substr(st[p[i].second].right - sum_str[p[i].second],
       sum_str[p[i].second]), num_of_lists[p[i].second]});
     --i;
   }
@@ -67,7 +76,6 @@ int32_t suff_tree::get_length(const int32_t v) const {
 // we need to go as much as we can
 Position suff_tree::go(Position pos, int32_t l, int32_t r) {
   while (true) {
-
     // if left == right => return
     if (l == r) {
       return pos;
@@ -161,7 +169,6 @@ Position suff_tree::extend_ukkonen(Position ptr, const int32_t i) {
 }
 
 void suff_tree::dfs(int32_t v) {
-
   sum_str[v] += sum_str[st[v].parent] + get_length(v);
 
   // because of the unread symbol

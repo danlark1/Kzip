@@ -8,6 +8,7 @@
 #include <clocale>
 #include <iostream>
 #include <algorithm>
+#include <utility>
 
 namespace Codecs {
 
@@ -199,7 +200,6 @@ namespace Codecs {
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
-
     trie = new Trie();
 
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
@@ -212,14 +212,14 @@ namespace Codecs {
     concat.reserve(1e6);
     int64_t cnt_letters = 0;
     for (size_t i = 0; i < sample.size(); ++i) {
-      concat += sample[i].to_string();
-      cnt_letters += sample[i].size();
-      if (cnt_letters >= static_cast<int64_t>(1e6)) {  // constant TODO(danlark1)
-        concat += "\0";
+      concat += sample[i].to_string() + '\0';
+      cnt_letters += sample[i].size() + 1;
+      if (cnt_letters >= static_cast<int64_t>(1e6)) {
+      // constant TODO(danlark1)
         break;
       }
     }
-
+    concat += "\0";
     tree = new suff_tree(concat);
     std::vector<std::pair<std::string, int64_t> > ans1 = tree->find_substr();
     for (const auto& t : ans1) {
@@ -291,7 +291,7 @@ namespace Codecs {
   void HuffmanCodec::reset() {
     trie->reset();
     ans.clear();
-    
+
     delete root_for_decode;
     delete root_for_encode;
   }

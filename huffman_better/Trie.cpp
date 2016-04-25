@@ -11,7 +11,7 @@ void Trie::make_transfer(int32_t i, unsigned char c, bool is_end) {
   nodes[i].next[c] = nodes.size() - 1;
 }
 
-void Trie::insert(std::string& s) {
+void Trie::insert(const std::string& s) {
   int32_t i = 0;
   size_t j = 0;
   while (j < s.size() && is_next(i, static_cast<unsigned char>(s[j]))) {
@@ -32,7 +32,7 @@ void Trie::insert(std::string& s) {
   return;
 }
 
-void Trie::insert(std::string& s, std::vector<int32_t>& code) {
+void Trie::insert(const std::string& s, const std::vector<int32_t>& code) {
   int32_t i = 0;
   size_t j = 0;
   while (j < s.size() && is_next(i, static_cast<unsigned char>(s[j]))) {
