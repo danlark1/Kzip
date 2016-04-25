@@ -26,3 +26,6 @@ data3 encode 5.9, decode 4.9
 
 Есть идеи по собственному алгоритму сжатия. Из технологий буду использовать STL, gprof, valgrind.
 
+3) huffman_better. Результаты на лицо.
+
+![Тесты](https://github.com/danlark1/compression/raw/master/huffman_better/tests.png)
