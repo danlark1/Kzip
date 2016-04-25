@@ -3,13 +3,13 @@
 #include <iostream>
 #include <fstream>
 
-int main () {
+int main (int argc, char* argv[]) {
   Tester tester;
   Codecs::HuffmanCodec huffman;
   tester.set_codec(huffman);
 
   //path to file
-  tester.readfile("../../DATAX/data5");
+  tester.readfile(argv[1]);
   tester.learn_codec();
   tester.test_encode();
   //tester.write_encoded_file("data1coded");

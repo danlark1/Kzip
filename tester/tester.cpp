@@ -1,9 +1,9 @@
+#include "tester.h"
 #include <cstdio>
 #include <ctime>
 #include <vector>
 #include <string>
 #include <fstream>
-#include "tester.h"
 #include <iostream>
 
 template <typename Iter>
@@ -15,7 +15,8 @@ void select_sample(StringViewVector& sample, Iter begin, Iter end,
 
 void Tester::learn_codec() {
   StringViewVector sample;
-  select_sample(sample, this->data.begin(), this->data.end(), this->codec->sample_size(this->data.size()));
+  select_sample(sample, this->data.begin(), this->data.end(),
+    this->codec->sample_size(this->data.size()));
   double start = clock();
   this->codec->learn(sample);
   double finish = clock();
@@ -24,7 +25,7 @@ void Tester::learn_codec() {
 
 void Tester::readfile(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
-  while(input.good()) {
+  while (input.good()) {
     std::string cur_string;
     getline(input, cur_string);
     cur_string.shrink_to_fit();
@@ -161,7 +162,7 @@ void Tester::saved_memory() {
     ++encoded_it;
   }
   printf("Memory saved (MBs): %f\n", 1.0 * saved / 1024 / 1024);
-  printf("Memory saved (percent): %f %%\n", 100 - 100.0 * mem1 / mem2);
+  printf("Memory saved (percent): %f%%\n", 100 - 100.0 * mem1 / mem2);
 }
 
 void Tester::reset() {
