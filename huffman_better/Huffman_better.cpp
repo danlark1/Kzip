@@ -1,3 +1,15 @@
+/*
+  Okay, lets start compressing;
+  Load -- need file, named "config" for decoding, pls be sure that this file
+  exists in the same path. DO NOT CHANGE this file either you'll fail decoding.
+
+  encode and decode --- works as well
+
+  Save -- saves the file, called "config"
+
+  everything else should be intuitively understandable
+*/
+
 #include "Huffman_better.h"
 #include "Node_better.h"
 #include "Suffix_tree.h"
@@ -5,9 +17,9 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <clocale>
-#include <iostream>
+#include <inttypes.h>
 #include <algorithm>
+#include <iostream>
 #include <utility>
 
 namespace Codecs {
@@ -20,7 +32,7 @@ namespace Codecs {
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     encoded.reserve(2 * raw.size());
     unsigned char buf = 0;
-    int8_t count = CHAR_SIZE;
+    int8_t count = CHAR_SIZE - LOG_CHAR_SIZE;
     size_t j = 0;
     size_t i = 0;
     size_t uz = 0;
@@ -72,7 +84,10 @@ namespace Codecs {
     if (count != CHAR_SIZE) {
       encoded.push_back(buf << count);
     }
-    encoded.push_back(static_cast<uint8_t>(CHAR_SIZE - count));
+    unsigned char c = encoded[0];
+    c |= (static_cast<unsigned char>(CHAR_SIZE - count)) <<
+     (CHAR_SIZE - LOG_CHAR_SIZE);
+    encoded[0] = c;
   }
 
 
@@ -81,13 +96,31 @@ namespace Codecs {
       return;
     }
     raw.reserve(2 * encoded.size());
-    int8_t count = 0;
+    int8_t count = LOG_CHAR_SIZE;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
-    int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 2;
+    int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 1;
+
+    while (true) {
+      if (byte & (1 << (CHAR_SIZE - count - 1))) {
+        cur = cur->right;
+      } else {
+        cur = cur->left;
+      }
+      if (!cur->left) {
+        raw += cur->getData();
+        cur = root_for_decode;
+      }
+      ++count;
+      if (count == CHAR_SIZE) {
+        count = 0;
+        byte = encoded[1];
+        break;
+      }
+    }
 
     // till almost the last element
-    for (int64_t i = 0; i < encoded_size; ++i) {
+    for (int64_t i = 1; i < encoded_size; ++i) {
       raw += cur->to_go[byte].first;
       cur = cur->to_go[byte].second;
       byte = encoded[i + 1];
@@ -105,9 +138,7 @@ namespace Codecs {
         cur = root_for_decode;
       }
       ++count;
-      if (count == CHAR_SIZE || encoded[encoded_size + 1] == count) {
-        count = 0;
-        byte = encoded[encoded_size];
+      if (count == CHAR_SIZE || (static_cast<unsigned char>(encoded[0]) >> 5) == count) {
         break;
       }
     }
@@ -207,19 +238,19 @@ namespace Codecs {
       ans.push_back({s, 0});
       trie->insert(s);
     }
-
     std::string concat;
-    concat.reserve(1e6);
+    concat.reserve(5e5);
     int64_t cnt_letters = 0;
     for (size_t i = 0; i < sample.size(); ++i) {
-      concat += sample[i].to_string() + '\0';
+      concat += sample[i].to_string() + '\n';
       cnt_letters += sample[i].size() + 1;
-      if (cnt_letters >= static_cast<int64_t>(1e6)) {
+      if (cnt_letters >= static_cast<int64_t>(5e5)) {
+        concat.resize(5e5);
       // constant TODO(danlark1)
         break;
       }
     }
-    concat += "\0";
+    concat += '\n';
     tree = new suff_tree(concat);
     std::vector<std::pair<std::string, int64_t> > ans1 = tree->find_substr();
     for (const auto& t : ans1) {
