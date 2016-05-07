@@ -8,6 +8,7 @@
 #include <fstream>
 #include <utility>
 #include <iostream>
+#include <stack>
 
 suff_tree::suff_tree(const std::string& str) {
   s = str;
@@ -51,7 +52,7 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr() {
   while (j <= 5000 && i >= 0 && k <= 100000) {
     flag = false;
     for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; pop < st[p[i].second].right; ++pop) {
-      if (s[pop] == '\0') {
+      if (s[pop] == '\n') {
         flag = true;
         break;
       }
@@ -168,22 +169,32 @@ Position suff_tree::extend_ukkonen(Position ptr, const int32_t i) {
   }
 }
 
-void suff_tree::dfs(int32_t v) {
-  sum_str[v] += sum_str[st[v].parent] + get_length(v);
+void suff_tree::dfs(int32_t start) {
+  std::stack<int64_t> STACK;
+  STACK.push(start);
+  while (!STACK.empty()) {
+    int64_t v = STACK.top();
+    STACK.pop();
+    if (static_cast<size_t>(v) >= 2 * n) {
+      for (auto& it : st[v - 2 * n].next) {
+        num_of_lists[v - 2 * n] += num_of_lists[it.second];
+      } 
+      continue;
+    } 
+    sum_str[v] += sum_str[st[v].parent] + get_length(v);
+    // because of the unread symbol
+    if (static_cast<size_t>(st[v].right) == n) {
+      --sum_str[v];
+    }
 
-  // because of the unread symbol
-  if (static_cast<size_t>(st[v].right) == n) {
-    --sum_str[v];
-  }
-
-  // if list => num_of_lists = 1
-  if (st[v].next.size() == 0) {
-    num_of_lists[v] = 1;
-  }
-
-  for (const auto& it : st[v].next) {
-    dfs(it.second);
-    // add num_of_lists of a child
-    num_of_lists[v] += num_of_lists[it.second];
+    // if list => num_of_lists = 0
+    if (st[v].next.size() == 0) {
+      num_of_lists[v] = 1;
+    } else {
+      STACK.push(2 * n + v);
+      for (auto& it : st[v].next) {
+        STACK.push(it.second);
+      }
+    }
   }
 }
