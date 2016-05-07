@@ -1,14 +1,18 @@
+//SELF-MADE LIBRARIES
 #include "Suffix_tree.h"
+
+// NEEDED LIBRARIES
 #include <unordered_map>
-#include <cstdio>
 #include <algorithm>
 #include <vector>
 #include <string>
-#include <cmath>
 #include <fstream>
 #include <utility>
-#include <iostream>
+#include <inttypes.h>
 #include <stack>
+
+// DEBUG LIBRARIES (REMOVE TODO)
+#include <iostream>
 
 suff_tree::suff_tree(const std::string& str) {
   s = str;
