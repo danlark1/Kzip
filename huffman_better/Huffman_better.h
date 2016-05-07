@@ -6,12 +6,14 @@
 #include "Suffix_tree.h"
 #include <climits>
 #include <string>
+#include <math.h>
 #include <vector>
 #include <unordered_map>
 
 namespace Codecs {
 
   const size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
+  const size_t LOG_CHAR_SIZE = ceil(log(CHAR_SIZE));
 
   class HuffmanCodec : public CodecIFace {
   public:  
