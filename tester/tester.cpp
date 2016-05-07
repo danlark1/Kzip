@@ -100,13 +100,12 @@ void Tester::test_encode() {
 
 void Tester::test_decode() {
   this->codec->load("config");
-
   double start = 1.0 * clock();
   for (auto& cur_string : this->encoded_data) {
     std::string out;
     this->codec->decode(out, cur_string);
     this->decoded_data.push_back(out);
-  } 
+  }
   double finish = 1.0 * clock();
   printf("decode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
@@ -116,7 +115,7 @@ void Tester::save_info() {
   out << encoded_data.size() << '\n';
   for (auto& cur_string : encoded_data) {
     out << cur_string.size() << '\n';
-  } 
+  }
   out.close();
 }
 
