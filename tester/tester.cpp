@@ -1,3 +1,9 @@
+/*
+  This is a simple tester, it shows the example how to use codec, pls, be sure
+  that you understand everything here.
+*/
+
+
 #include "tester.h"
 #include <cstdio>
 #include <ctime>
