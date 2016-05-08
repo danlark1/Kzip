@@ -1,31 +1,12 @@
 Кутенин Данила
 # compression project HSE
 
-1) Написан хорошо оптимизированный Хаффман в папке Huffman 1-st v. (Huffman.h, Huffman.cpp, Node.h, Node.cpp)
+1) huffman_better.
 
-2) Чтобы запустить тестер, надо в main.cpp указать имя 
-закодированного файла и тогда можно запусть тестер, 
-который закодирует, раскодирует и проверит сколько 
-памяти он сэкономил. Не забудьте подключить только 
-"Huffman.h" и в Cmake исправить (если не исправлено) --
-указать путь до tester'a!.
+To use tests juck make the project and run it with 1 
+argument "path to file". Tester will show the work of 
+the library.
 
-Тесты на encode и decode (Intel Core i5) в секундах:
 
-data1 encode 6.1, decode 4.6
-
-data2 encode 4.75, decode 3.68
-
-data3 encode 5.9, decode 4.9
-
-Сжатие во всех 3 случаях идёт в 1.5 раза.
-
-2) Уже написано суффиксное дерево. Далее буду применять различные эвристики с этим деревом, чтобы улучшить степень сжатия. Для начала жадный алгоритм с бором.
-
-Потом постараюсь убрать различные плохие случаи для суффиксного дерева (например, если длины кодов 2 строк в сумме меньше, чем длина их сконкатенированной). 
-
-Есть идеи по собственному алгоритму сжатия. Из технологий буду использовать STL, gprof, valgrind.
-
-3) huffman_better. Результаты на лицо.
-
-![Тесты](https://github.com/danlark1/compression/raw/master/huffman_better/tests.png)
+ULTRA-MEGA-SETTINGs
+![Тесты](https://github.com/danlark1/compression/raw/master/src/tests.png)
