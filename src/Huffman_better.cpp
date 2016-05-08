@@ -18,20 +18,32 @@
 
 
 // NEEDED LIBRARIES
+#include <inttypes.h>
 #include <fstream>
 #include <vector>
 #include <string>
-#include <inttypes.h>
 #include <algorithm>
 #include <utility>
- 
-// DEBUG LIBRARY (REMOVE TODO)  
-#include <iostream> 
+#include <queue>
+
+// DEBUG LIBRARY (REMOVE TODO)
+#include <iostream>
 
 namespace Codecs {
 
-  bool comp(Node* l, Node* r) {
-    return l->getFrequency() > r->getFrequency();
+  class comp {
+   public:
+    bool operator() (std::pair<Node*, int64_t> l, std::pair<Node*, int64_t> r) {
+      if (l.first->getFrequency() == r.first->getFrequency()) {
+        return r.second > l.second;
+      }
+      return l.first->getFrequency() > r.first->getFrequency();
+    }
+  };
+
+  HuffmanCodec::HuffmanCodec() {
+    root_for_decode = new Node("", 0);
+    root_for_encode = new Node("", 0);
   }
 
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
@@ -45,20 +57,20 @@ namespace Codecs {
     size_t last_uz = 0;
 
     string cur;
-    cur.reserve(10);
+    cur.reserve(20);
     while (i < raw.size()) {
       j = 0;
       uz = 0;
       cur.clear();
       cur.push_back(raw[i]);
 
-      uz = trie->next(uz, static_cast<unsigned char>(raw[i]));
+      uz = trie.next(uz, static_cast<unsigned char>(raw[i]));
       last_uz = uz;
       len_uz = 1;
-      while (i + 1 < raw.size() && trie->is_next(uz, raw[i + 1])) {
-        uz = trie->next(uz, raw[i + 1]);
+      while (i + 1 < raw.size() && trie.is_next(uz, raw[i + 1])) {
+        uz = trie.next(uz, raw[i + 1]);
         ++i;
-        if (trie->nodes[uz].is_terminal) {
+        if (trie.nodes[uz].is_terminal) {
           len_uz = cur.size() + 1;
           last_uz = uz;
         }
@@ -70,11 +82,11 @@ namespace Codecs {
       }
 
       // fuck this shit
-      size_t size_of_path = trie->nodes[last_uz].code.size();
+      size_t size_of_path = trie.nodes[last_uz].code.size();
       while (j < size_of_path) {
         while (j < size_of_path && count) {
           buf <<= 1;
-          buf += trie->nodes[last_uz].code[j];
+          buf += trie.nodes[last_uz].code[j];
           ++j;
           --count;
         }
@@ -143,8 +155,8 @@ namespace Codecs {
         cur = root_for_decode;
       }
       ++count;
-      if (count == CHAR_SIZE || 
-        (static_cast<unsigned char>(encoded[0]) >> 5) == count) {
+      if (count == CHAR_SIZE ||
+        (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) == count) {
         break;
       }
     }
@@ -173,13 +185,13 @@ namespace Codecs {
 
     if (root_for_table->left == root_for_table->right) {
       string s = root_for_table->getData();
-      trie->insert(s, code);
+      trie.insert(s, code);
     }
     code.pop_back();
   }
 
   void HuffmanCodec::load(const string_view& config) {
-    trie->reset();
+    trie.reset();
     ans.clear();
     ans.shrink_to_fit();
 
@@ -209,26 +221,26 @@ namespace Codecs {
     input.close();
 
 
-    std::vector<Node*> table_cur;
+    std::priority_queue<std::pair<Node*, int64_t>,
+     std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
+    int64_t i = 0;
     for (const auto& c : ans) {
       Node* p = new Node(c.first, c.second);
-      table_cur.push_back(p);
+      table_cur.push({p, i});
+      ++i;
     }
 
-    auto it = table_cur.begin();
     while (table_cur.size() != 1) {
-      std::stable_sort(it, table_cur.end(), comp);
-      Node* left_son = table_cur.back();
-      table_cur.pop_back();
-      Node* right_son = table_cur.back();
-      table_cur.pop_back();
+      Node* left_son = table_cur.top().first;
+      table_cur.pop();
+      Node* right_son = table_cur.top().first;
+      table_cur.pop();
       Node* parent = new Node(left_son, right_son);
-      table_cur.push_back(parent);
+      table_cur.push({parent, i});
+      ++i;
     }
-    root_for_decode = table_cur.front();
-    Node* root_for_table = root_for_encode;
-
-    root_for_table = root_for_decode;
+    root_for_decode = table_cur.top().first;
+    Node* root_for_table = root_for_decode;
     build_jumps(root_for_table);
   }
 
@@ -237,12 +249,12 @@ namespace Codecs {
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
-    trie = new Trie();
+    trie = Trie();
 
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
       std::string s(1, c);
       ans.push_back({s, 0});
-      trie->insert(s);
+      trie.insert(s);
     }
     std::string concat;
     concat.reserve(5e5);
@@ -272,24 +284,26 @@ namespace Codecs {
     ans1.clear();
     ans1.shrink_to_fit();
 
-
-    std::vector<Node*> table_cur;
+    // need to use pair because of the non-deterministic Heap;
+    std::priority_queue<std::pair<Node*, int64_t>,
+     std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
+    int64_t i = 0;
     for (const auto& c : ans) {
       Node* p = new Node(c.first, c.second);
-      table_cur.push_back(p);
+      table_cur.push({p, i});
+      ++i;
     }
 
-    auto it = table_cur.begin();
     while (table_cur.size() != 1) {
-      std::stable_sort(it, table_cur.end(), comp);
-      Node* left_son = table_cur.back();
-      table_cur.pop_back();
-      Node* right_son = table_cur.back();
-      table_cur.pop_back();
+      Node* left_son = table_cur.top().first;
+      table_cur.pop();
+      Node* right_son = table_cur.top().first;
+      table_cur.pop();
       Node* parent = new Node(left_son, right_son);
-      table_cur.push_back(parent);
+      table_cur.push({parent, i});
+      ++i;
     }
-    root_for_encode = table_cur.front();
+    root_for_encode = table_cur.top().first;
     Node* root_for_table = root_for_encode;
 
     std::vector<int32_t> code;
@@ -303,7 +317,6 @@ namespace Codecs {
     for (size_t byte = 0; byte < (1 << CHAR_SIZE); ++byte) {
       cur = node;
       if (!cur->right || !cur->left) {
-        // cur = root_for_decode;
         continue;
       }
       for (size_t j = 0; j < CHAR_SIZE; ++j) {
@@ -326,10 +339,11 @@ namespace Codecs {
   }
 
   void HuffmanCodec::reset() {
-    trie->reset();
+    trie.reset();
     ans.clear();
+    ans.shrink_to_fit();
 
     delete root_for_decode;
     delete root_for_encode;
   }
-}
+}  // namespace Codecs

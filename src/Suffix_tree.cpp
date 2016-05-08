@@ -53,7 +53,7 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr() {
   int j = 0;
   bool flag = false;
   std::vector<std::pair<std::string, int64_t> > ans;
-  while (j <= 64000 && i >= 0 && k <= 1000000) {
+  while (j <= 5000 && i >= 0 && k <= 100000) {
     flag = false;
     for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; pop < st[p[i].second].right; ++pop) {
       if (s[pop] == '\n') {

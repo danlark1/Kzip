@@ -5,6 +5,13 @@
 #include <vector>
 #include <string>
 
+Node::Node() {
+  left = nullptr;
+  right = nullptr;
+  frequency = 0;
+  data = "";
+}
+
 Node::Node(std::string d, int64_t s, Node_type t) { // make a leaf
   type = t;
   data = d;
@@ -30,8 +37,10 @@ Node::Node(Node* l, Node* r, Node_type t) { // make a bind
 }
 
 Node::~Node() {
-  delete left;
-  delete right;
+  if (this->left != nullptr) {
+    delete left;
+    delete right;
+  }
 }
 
 int64_t Node::getFrequency() const { // frequency of a node

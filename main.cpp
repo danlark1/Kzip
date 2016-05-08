@@ -16,8 +16,10 @@ int main (int argc, char* argv[]) {
   // tester.save_info();
   tester.save_config();
   //tester.read_decoded_file("data1coded");
-  tester.test_decode();
   huffman.reset();
+  tester.test_decode();
+  // huffman.reset();
+  
   tester.check_correctness();
   // tester.write_decoded_file("data1");
   tester.saved_memory();
