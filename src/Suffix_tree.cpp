@@ -53,7 +53,7 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr() {
   int j = 0;
   bool flag = false;
   std::vector<std::pair<std::string, int64_t> > ans;
-  while (j <= 5000 && i >= 0 && k <= 100000) {
+  while (j <= 6400 && i >= 0 && k <= 1000000) {
     flag = false;
     for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; pop < st[p[i].second].right; ++pop) {
       if (s[pop] == '\n') {
@@ -184,8 +184,12 @@ void suff_tree::dfs(int32_t start) {
         num_of_lists[v - 2 * n] += num_of_lists[it.second];
       } 
       continue;
-    } 
-    sum_str[v] += sum_str[st[v].parent] + get_length(v);
+    }       
+    if (st[v].parent != -1) {
+      sum_str[v] += sum_str[st[v].parent] + get_length(v);
+    } else {
+      sum_str[v] += get_length(v);
+    }
     // because of the unread symbol
     if (static_cast<size_t>(st[v].right) == n) {
       --sum_str[v];

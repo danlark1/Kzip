@@ -1,4 +1,4 @@
-//SELF-MADE
+// SELF-MADE
 #include "Node_better.h"
 
 // NEEDED LIBRARIES
@@ -37,6 +37,8 @@ Node::Node(Node* l, Node* r, Node_type t) { // make a bind
 }
 
 Node::~Node() {
+  to_go.clear();
+  to_go.shrink_to_fit();
   if (this->left != nullptr) {
     delete left;
     delete right;

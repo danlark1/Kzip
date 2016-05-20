@@ -10,7 +10,7 @@
   everything else should be intuitively understandable
 */
 
-// SELF-MADE LIBRATIES
+// SELF-MADE LIBRARIES
 #include "Huffman_better.h"
 #include "Node_better.h"
 #include "Suffix_tree.h"
@@ -33,7 +33,7 @@ namespace Codecs {
 
   class comp {
    public:
-    bool operator() (std::pair<Node*, int64_t> l, std::pair<Node*, int64_t> r) {
+    bool operator() (std::pair<Node*, int64_t>& l, std::pair<Node*, int64_t>& r) {
       if (l.first->getFrequency() == r.first->getFrequency()) {
         return r.second > l.second;
       }
@@ -41,10 +41,9 @@ namespace Codecs {
     }
   };
 
-  HuffmanCodec::HuffmanCodec() {
-    root_for_decode = new Node("", 0);
-    root_for_encode = new Node("", 0);
-  }
+  HuffmanCodec::HuffmanCodec() {}
+
+  HuffmanCodec::~HuffmanCodec() {}
 
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     encoded.reserve(2 * raw.size());
@@ -156,7 +155,8 @@ namespace Codecs {
       }
       ++count;
       if (count == CHAR_SIZE ||
-        (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) == count) {
+        (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) 
+        == count) {
         break;
       }
     }
@@ -182,7 +182,6 @@ namespace Codecs {
       code.push_back(true);
       Build_table(root_for_table->right, code);
     }
-
     if (root_for_table->left == root_for_table->right) {
       string s = root_for_table->getData();
       trie.insert(s, code);
@@ -191,7 +190,6 @@ namespace Codecs {
   }
 
   void HuffmanCodec::load(const string_view& config) {
-    trie.reset();
     ans.clear();
     ans.shrink_to_fit();
 
@@ -206,6 +204,9 @@ namespace Codecs {
       getline(input, now);
       int64_t count = 0;
       int64_t i = now.size() - 1;
+      if (i == -1) {
+        i = 0;
+      }
       while (now[i] <= '9' && now[i] >= '0') {
         --i;
       }
@@ -235,17 +236,18 @@ namespace Codecs {
       table_cur.pop();
       Node* right_son = table_cur.top().first;
       table_cur.pop();
+
       Node* parent = new Node(left_son, right_son);
       table_cur.push({parent, i});
+
       ++i;
     }
     root_for_decode = table_cur.top().first;
-    Node* root_for_table = root_for_decode;
-    build_jumps(root_for_table);
+    build_jumps(root_for_decode);
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(static_cast<size_t>(10000), records_total);
+    return std::min(static_cast<size_t>(1000), records_total);
   }
 
   void HuffmanCodec::learn(const StringViewVector& sample) {
@@ -257,13 +259,13 @@ namespace Codecs {
       trie.insert(s);
     }
     std::string concat;
-    concat.reserve(5e5);
+    concat.reserve(2e5);
     int64_t cnt_letters = 0;
     for (size_t i = 0; i < sample.size(); ++i) {
       concat += sample[i].to_string() + '\n';
       cnt_letters += sample[i].size() + 1;
-      if (cnt_letters >= static_cast<int64_t>(5e5)) {
-        concat.resize(5e5);
+      if (cnt_letters >= static_cast<int64_t>(2e5)) {
+        concat.resize(2e5);
       // constant TODO(danlark1)
         break;
       }
@@ -303,11 +305,10 @@ namespace Codecs {
       table_cur.push({parent, i});
       ++i;
     }
-    root_for_encode = table_cur.top().first;
-    Node* root_for_table = root_for_encode;
+    root_for_decode = table_cur.top().first;
 
     std::vector<int32_t> code;
-    Build_table(root_for_table, code);
+    Build_table(root_for_decode, code);
     code.clear();
     code.shrink_to_fit();
   }
@@ -339,11 +340,10 @@ namespace Codecs {
   }
 
   void HuffmanCodec::reset() {
-    trie.reset();
     ans.clear();
     ans.shrink_to_fit();
-
-    delete root_for_decode;
-    delete root_for_encode;
+    if (root_for_decode != nullptr) {
+      delete root_for_decode;
+    }
   }
 }  // namespace Codecs

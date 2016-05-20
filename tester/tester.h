@@ -15,7 +15,7 @@ public:
   void write_encoded_file(const std::string&);
   void write_decoded_file(const std::string&);
   void learn_codec();
-  void set_codec(Codecs::CodecIFace&);
+  void set_codec(Codecs::CodecIFace*);
   void check_correctness();
   void save_config();
   void save_info();

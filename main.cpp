@@ -6,7 +6,7 @@
 int main (int argc, char* argv[]) {
   Tester tester;
   Codecs::HuffmanCodec huffman;
-  tester.set_codec(huffman);
+  tester.set_codec(&huffman);
 
   //path to file
   tester.readfile(argv[1]);
@@ -23,6 +23,7 @@ int main (int argc, char* argv[]) {
   tester.check_correctness();
   // tester.write_decoded_file("data1");
   tester.saved_memory();
+  huffman.reset();
   tester.reset();
   return 0;
 }

@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+#include <iostream>
+
 Trie::Trie() {
   nodes.push_back(Uzel(0));
 }
@@ -66,7 +68,7 @@ int32_t Trie::next(int32_t uz, unsigned char c) const {
   return nodes[uz].next[c];
 }
 
-void Trie::reset() {
-  nodes.clear();
+Trie::~Trie() {
+  // nodes.clear();
   nodes.shrink_to_fit();
 }

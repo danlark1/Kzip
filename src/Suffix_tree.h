@@ -28,6 +28,9 @@ struct Node_s {
     this->right = r; 
     this->link = suflink;
   }
+  ~Node_s() {
+    next.clear();
+  }
 };
 
 

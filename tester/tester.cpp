@@ -76,7 +76,7 @@ void Tester::read_decoded_file(const std::string& from) {
       j += (cur_string.size() + 1);
     }
     out.pop_back();
-    encoded_data.push_back(out);
+    // encoded_data.push_back(out);
   }
   input.close();
   conf.close();
@@ -87,8 +87,8 @@ void Tester::save_config() {
 }
 
 
-void Tester::set_codec(Codecs::CodecIFace& codec) {
-  (this->codec) = &codec;
+void Tester::set_codec(Codecs::CodecIFace* codec) {
+  this->codec = codec;
 }
 
 void Tester::test_encode() {

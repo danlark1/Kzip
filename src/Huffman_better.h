@@ -26,11 +26,11 @@ namespace Codecs {
     size_t sample_size(size_t records_total) const override;
     void learn(const StringViewVector&) override;
     void reset() override;
+    ~HuffmanCodec();
     HuffmanCodec();
   private:
     Trie trie;
     suff_tree* tree;
-    Node* root_for_encode;
     Node* root_for_decode;
     std::vector<std::pair<std::string, int64_t> > ans;
     void Build_table(Node* root, std::vector<int32_t>& code);
