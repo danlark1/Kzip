@@ -24,7 +24,7 @@ namespace Codecs {
     string save() const override;
     void load(const string_view&) override;
     size_t sample_size(size_t records_total) const override;
-    void learn(const StringViewVector&) override;
+    void learn(const StringViewVector&, const size_t dict_size) override;
     void reset() override;
     ~HuffmanCodec();
     HuffmanCodec();

@@ -54,7 +54,7 @@ namespace Codecs {
         virtual void load(const string_view&) = 0;
 
         virtual size_t sample_size(size_t records_total) const = 0;
-        virtual void learn(const StringViewVector& sample) = 0;
+        virtual void learn(const StringViewVector& sample, const size_t dict_size) = 0;
 
         virtual void reset() = 0;
 

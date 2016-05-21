@@ -39,7 +39,7 @@ class suff_tree {
 public:
   suff_tree(const std::string& str);
   ~suff_tree();
-  std::vector<std::pair<std::string, int64_t> > find_substr();
+  std::vector<std::pair<std::string, int64_t> > find_substr(const size_t dict_size);
 
 private:
   // states of a suffix tree

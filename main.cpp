@@ -10,12 +10,16 @@ int main (int argc, char* argv[]) {
 
   //path to file
   tester.readfile(argv[1]);
-  tester.learn_codec();
+  if (argc >= 3) {
+    tester.learn_codec(std::atoi(argv[2]));
+  } else {
+    tester.learn_codec(0);
+  }
   tester.test_encode();
-  //tester.write_encoded_file("data1coded");
+  // tester.write_encoded_file("data1coded");
   // tester.save_info();
   tester.save_config();
-  //tester.read_decoded_file("data1coded");
+  // tester.read_decoded_file("data1coded");
   huffman.reset();
   tester.test_decode();
   // huffman.reset();

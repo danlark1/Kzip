@@ -42,7 +42,7 @@ suff_tree::~suff_tree() {
   s.shrink_to_fit();
 }
 
-std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr() {
+std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const size_t dict_size) {
   dfs(0);
   std::vector<std::pair<int32_t, int32_t> > p;
   for (size_t i = 1; i < st.size(); ++i) {
@@ -50,12 +50,13 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr() {
   }
   stable_sort(p.begin(), p.end());
   int32_t k = 0, i = p.size() - 1;
-  int j = 0;
+  size_t j = 0;
   bool flag = false;
   std::vector<std::pair<std::string, int64_t> > ans;
-  while (j <= 6400 && i >= 0 && k <= 1000000) {
+  while (j <= dict_size && i >= 0 && k <= 100000) {
     flag = false;
-    for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; pop < st[p[i].second].right; ++pop) {
+    for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; 
+      pop < st[p[i].second].right; ++pop) {
       if (s[pop] == '\n') {
         flag = true;
         break;

@@ -2,11 +2,8 @@
   Okay, lets start compressing;
   Load -- need file, named "config" for decoding, pls be sure that this file
   exists in the same path. DO NOT CHANGE this file either you'll fail decoding.
-
   encode and decode --- works as well
-
   Save -- saves the file, called "config"
-
   everything else should be intuitively understandable
 */
 
@@ -33,7 +30,7 @@ namespace Codecs {
 
   class comp {
    public:
-    bool operator() (std::pair<Node*, int64_t>& l, std::pair<Node*, int64_t>& r) {
+    bool operator()(std::pair<Node*, int64_t>& l, std::pair<Node*, int64_t>& r) {
       if (l.first->getFrequency() == r.first->getFrequency()) {
         return r.second > l.second;
       }
@@ -79,8 +76,7 @@ namespace Codecs {
         cur.pop_back();
         --i;
       }
-
-      // fuck this shit
+      
       size_t size_of_path = trie.nodes[last_uz].code.size();
       while (j < size_of_path) {
         while (j < size_of_path && count) {
@@ -165,7 +161,7 @@ namespace Codecs {
   string HuffmanCodec::save() const {
     std::ofstream output("config", std::ios_base::binary);
     for (const auto& c : ans) {
-      output << c.first << " " << c.second << std::endl;
+      output << c.first.size() << " " << c.first << " " << c.second << std::endl;
     }
     output.close();
     return string();
@@ -199,24 +195,23 @@ namespace Codecs {
     }
 
     std::ifstream input(config.to_string(), std::ios_base::binary);
-    std::string now;
     while (input.good()) {
-      getline(input, now);
-      int64_t count = 0;
-      int64_t i = now.size() - 1;
-      if (i == -1) {
-        i = 0;
+      size_t len_string;
+      string current;
+      input >> len_string;
+      input.get();
+      if (!input.good()) {
+        break;
       }
-      while (now[i] <= '9' && now[i] >= '0') {
-        --i;
+      for (size_t i = 0; i < len_string; ++i) {
+        current += input.get();
       }
-      for (size_t j = i + 1; j < now.size(); ++j) {
-        count = 10 * count + (now[j] - '0');
-      }
-      if (i == 1) {
-        ans[static_cast<unsigned char>(now[0])].second = count;
+      size_t frequency;
+      input >> frequency;
+      if (len_string == 1) {
+        ans[static_cast<unsigned char>(current[0])].second = frequency;
       } else {
-        ans.push_back({now.substr(0, i), count});
+        ans.push_back({current, frequency});
       }
     }
     input.close();
@@ -236,10 +231,8 @@ namespace Codecs {
       table_cur.pop();
       Node* right_son = table_cur.top().first;
       table_cur.pop();
-
       Node* parent = new Node(left_son, right_son);
       table_cur.push({parent, i});
-
       ++i;
     }
     root_for_decode = table_cur.top().first;
@@ -247,10 +240,10 @@ namespace Codecs {
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(static_cast<size_t>(1000), records_total);
+    return std::min(static_cast<size_t>(10000), records_total);
   }
 
-  void HuffmanCodec::learn(const StringViewVector& sample) {
+  void HuffmanCodec::learn(const StringViewVector& sample, const size_t dict_size) {
     trie = Trie();
 
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
@@ -272,7 +265,7 @@ namespace Codecs {
     }
     concat += '\n';
     tree = new suff_tree(concat);
-    std::vector<std::pair<std::string, int64_t> > ans1 = tree->find_substr();
+    std::vector<std::pair<std::string, int64_t> > ans1 = tree->find_substr(dict_size);
     for (const auto& t : ans1) {
       if (t.first.size() == 1) {
         ans[static_cast<unsigned char>(t.first[0])].second = t.second;

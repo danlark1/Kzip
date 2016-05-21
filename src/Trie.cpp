@@ -57,7 +57,6 @@ void Trie::insert(const std::string& s, const std::vector<int32_t>& code) {
   }
   nodes[i].is_terminal = true;
   nodes[i].code = code;
-  return;
 }
 
 bool Trie::is_next(int32_t uz, unsigned char c) const {

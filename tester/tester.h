@@ -14,7 +14,7 @@ public:
   void read_decoded_file(const std::string&);
   void write_encoded_file(const std::string&);
   void write_decoded_file(const std::string&);
-  void learn_codec();
+  void learn_codec(const size_t dict_size);
   void set_codec(Codecs::CodecIFace*);
   void check_correctness();
   void save_config();

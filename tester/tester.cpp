@@ -19,40 +19,50 @@ void select_sample(StringViewVector& sample, Iter begin, Iter end,
     sample_size, std::mt19937(std::random_device()()));
 }
 
-void Tester::learn_codec() {
+void Tester::learn_codec(const size_t dict_size) {
   StringViewVector sample;
   select_sample(sample, this->data.begin(), this->data.end(),
     this->codec->sample_size(this->data.size()));
   double start = clock();
-  this->codec->learn(sample);
+  if (dict_size == 0) {
+    this->codec->learn(sample, 6400);
+  } else {
+    this->codec->learn(sample, dict_size);
+  }
   double finish = clock();
   printf("learning is successful in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
 void Tester::readfile(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
+  std::string cur_string;
   while (input.good()) {
-    std::string cur_string;
     getline(input, cur_string);
-    cur_string.shrink_to_fit();
     this->data.push_back(cur_string);
   }
   input.close();
+  this->data.shrink_to_fit();
   printf("%zu strings were read\n", this->data.size());
 }
 
 void Tester::write_encoded_file(const std::string& where_to) {
   std::ofstream output(where_to, std::ios_base::binary);
-  for (auto& cur_string : this->encoded_data) {
-    output << cur_string << '\n';
+  for (size_t i = 0; i + 1 < encoded_data.size(); ++i) {
+    output << encoded_data[i] << '\n';
+  }
+  if (encoded_data.size() >= 1) {
+    output << encoded_data[encoded_data.size() - 1];
   }
   output.close();
 }
 
 void Tester::write_decoded_file(const std::string& where_to) {
   std::ofstream output(where_to, std::ios_base::binary);
-  for (auto& cur_string : this->decoded_data) {
-    output << cur_string << '\n';
+  for (size_t i = 0; i + 1 < decoded_data.size(); ++i) {
+    output << decoded_data[i] << '\n';
+  }
+  if (decoded_data.size() >= 1) {
+    output << decoded_data[decoded_data.size() - 1];
   }
   output.close();
 }
@@ -76,7 +86,7 @@ void Tester::read_decoded_file(const std::string& from) {
       j += (cur_string.size() + 1);
     }
     out.pop_back();
-    // encoded_data.push_back(out);
+    encoded_data.push_back(out);
   }
   input.close();
   conf.close();
