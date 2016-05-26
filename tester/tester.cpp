@@ -114,6 +114,57 @@ void Tester::test_encode() {
   printf("encode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
+void Tester::test_encode_decode() {
+  size_t i = 0;
+  std::string out = this->codec->save();
+  this->codec->reset();
+  this->codec->load("config");
+  size_t mem1 = 0;
+  size_t mem2 = 0;
+
+  double time_en = 0;
+  double time_dec = 0;
+  double start;
+  double finish;
+  size_t error_count = 0;
+  std::ofstream errors("c", std::ios_base::binary);
+
+  for (auto& cur_string : this->data) {
+
+    // start encoding
+    std::string out;
+    start = clock();
+    this->codec->encode(out, cur_string);
+    finish = clock();
+    time_en += finish - start;
+
+    ++i;
+
+    std::string another;
+
+    start = clock();
+    this->codec->decode(another, out);
+    finish = clock();
+    time_dec += finish - start;
+
+    mem1 += out.size();
+    mem2 += cur_string.size();
+
+    if (another != cur_string) {
+      errors << another << std::endl;
+      errors << cur_string << std::endl;
+      errors << i << std::endl;
+      ++error_count;
+    }
+  }
+  errors.close();
+  printf("encode ended in %f\n", (time_en) / CLOCKS_PER_SEC);
+  printf("decode ended in %f\n", (time_dec) / CLOCKS_PER_SEC);
+  printf("Memory saved (MBs): %f\n", 1.0 * ((long long)mem2 - (long long)mem1) / 1024 / 1024);
+  printf("Memory saved (percent): %f%%\n", 100 - 100.0 * mem1 / mem2);
+  printf("%zu errors were occured\n", error_count);
+}
+
 void Tester::test_decode() {
   this->codec->load("config");
   double start = 1.0 * clock();

@@ -23,6 +23,7 @@ public:
   void test_encode();
   void test_decode();
   void reset();
+  void test_encode_decode();
 protected:
   Codecs::CodecIFace* codec;
   std::vector<std::string> data;
