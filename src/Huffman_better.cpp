@@ -16,12 +16,13 @@
 
 // NEEDED LIBRARIES
 #include <inttypes.h>
-#include <fstream>
-#include <vector>
-#include <string>
 #include <algorithm>
-#include <utility>
+#include <fstream>
+#include <map>
 #include <queue>
+#include <string>
+#include <utility>
+#include <vector>
 
 // DEBUG LIBRARY (REMOVE TODO)
 #include <iostream>
@@ -248,7 +249,46 @@ namespace Codecs {
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
-    return std::min(static_cast<size_t>(100000), records_total);
+    return std::min(static_cast<size_t>(MAX_CONCAT_SIZE), records_total);
+  }
+
+  void HuffmanCodec::shrinking(std::vector<std::pair<std::string, int64_t> >& ans_copied, const size_t concat_size) {
+    std::map<std::pair<int64_t, std::string>, std::pair<int64_t, bool> > IS_STRING_OK;
+    for (auto& str : ans_copied) {
+      IS_STRING_OK[{str.first.size(), str.first}] = {str.second, true};
+    }
+    for (auto& str : IS_STRING_OK) {
+      if (str.first.second.size() > 1) {
+        for (size_t i = 1; i + 1 < str.first.second.size(); ++i) {
+          string s_1;
+          string s_2;
+          for (size_t j = 0; j < i; ++j) {
+            s_1.push_back(str.first.second[j]);
+          }
+          for (size_t j = i; j < str.first.second.size(); ++j) {
+            s_2.push_back(str.first.second[j]);
+          }
+          if (IS_STRING_OK.count({s_1.size(), s_1}) && IS_STRING_OK.count({s_2.size(), s_2}) 
+            && IS_STRING_OK[{s_1.size(), s_1}].second && IS_STRING_OK[{s_2.size(), s_2}].second) {
+            if (5 * IS_STRING_OK[{s_1.size(), s_1}].first * IS_STRING_OK[{s_2.size(), s_2}].first 
+              > str.second.first * static_cast<int64_t>(concat_size)) {
+              str.second.second = false;
+            }
+          }
+        }
+      }
+    }
+    ans_copied.resize(1 << CHAR_SIZE);
+    std::vector<std::pair<int64_t, std::string> > ans_copy;
+    for (auto& str : IS_STRING_OK) {
+      if (str.second.second && str.first.first >= 2) {
+        ans_copy.push_back({str.second.first, str.first.second});
+      }
+    }
+    sort(ans_copy.rbegin(), ans_copy.rend());
+    for (auto& str : ans_copy) {
+      ans_copied.push_back({str.second, str.first});
+    }
   }
 
   void HuffmanCodec::learn(StringViewVector& sample, const size_t dict_size) {
@@ -265,22 +305,24 @@ namespace Codecs {
     std::random_shuffle(sample.begin(), sample.end());
     {
       std::string concat;
-      concat.reserve(1e6);
+      concat.reserve(MAX_CONCAT_SIZE);
       int64_t cnt_letters = 0;
       for (size_t i = 0; i < sample.size(); ++i) {
         concat += sample[i].to_string() + '\n';
         cnt_letters += sample[i].size() + 1;
-        if (cnt_letters >= static_cast<int64_t>(1e6)) {
-          concat.resize(1e6);
+        if (cnt_letters >= static_cast<int64_t>(MAX_CONCAT_SIZE)) {
+          concat.resize(MAX_CONCAT_SIZE);
           // constant TODO(danlark1)
           break;
         }
       }
       concat += '\n';
+      concat_size = concat.size();
 
       {
         suff_tree tree(concat);
         std::vector<std::pair<std::string, int64_t> > ans1 = tree.find_substr(dict_size);
+
         for (const auto& t : ans1) {
           if (t.first.size() == 1) {
             ans[static_cast<unsigned char>(t.first[0])].second = t.second;
@@ -332,6 +374,7 @@ namespace Codecs {
         ans.push_back({c.second, c.first});
       }
     }
+    shrinking(ans, concat_size);
 
     // need to use pair because of the non-deterministic Heap;
     std::priority_queue<std::pair<Node*, int64_t>,

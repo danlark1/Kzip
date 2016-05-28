@@ -16,6 +16,7 @@ namespace Codecs {
 
   const size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
   const size_t LOG_CHAR_SIZE = ceil(log(CHAR_SIZE));
+  const size_t MAX_CONCAT_SIZE = 1e6;
 
   class HuffmanCodec : public CodecIFace {
   public:
@@ -29,8 +30,10 @@ namespace Codecs {
     ~HuffmanCodec();
     HuffmanCodec();
   private:
+    size_t concat_size;
     Trie trie;
     Node* root_for_decode;
+    void shrinking(std::vector<std::pair<std::string, int64_t> >& ans_copy, const size_t concat_size);
     std::vector<std::pair<std::string, int64_t> > ans;
     void Build_table(Node* root, std::vector<int32_t>& code);
     void build_jumps(Node* a);
