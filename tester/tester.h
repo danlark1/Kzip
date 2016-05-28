@@ -11,6 +11,7 @@ using StringViewVector = std::vector< std::experimental::string_view >;
 class Tester {
 public:
   void readfile(const std::string&);
+  void readfile_uint(const std::string&);
   void read_decoded_file(const std::string&);
   void write_encoded_file(const std::string&);
   void write_decoded_file(const std::string&);

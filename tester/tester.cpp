@@ -25,7 +25,7 @@ void Tester::learn_codec(const size_t dict_size) {
     this->codec->sample_size(this->data.size()));
   double start = clock();
   if (dict_size == 0) {
-    this->codec->learn(sample, 6400);
+    this->codec->learn(sample, 12400);
   } else {
     this->codec->learn(sample, dict_size);
   }
@@ -38,6 +38,30 @@ void Tester::readfile(const std::string& data_in_file) {
   std::string cur_string;
   while (input.good()) {
     getline(input, cur_string);
+    this->data.push_back(cur_string);
+  }
+  input.close();
+  this->data.shrink_to_fit();
+  printf("%zu strings were read\n", this->data.size());
+}
+
+void Tester::readfile_uint(const std::string& data_in_file) {
+  std::ifstream input(data_in_file, std::ios_base::binary);
+  while (input.good()) {
+    std::string cur_string;
+    std::string bin;
+    for (size_t i = 0; i < 4; ++i) {
+      bin += input.get();
+    }
+    std::istringstream raw(bin);
+    uint32_t sz;
+    raw.read(reinterpret_cast<char*>(&sz), sizeof sz);
+    for (uint32_t i = 0; i < sz; ++i) {
+      if (!input.good()) {
+        break;
+      }
+      cur_string += input.get();
+    }
     this->data.push_back(cur_string);
   }
   input.close();
@@ -127,7 +151,7 @@ void Tester::test_encode_decode() {
   double start;
   double finish;
   size_t error_count = 0;
-  std::ofstream errors("c", std::ios_base::binary);
+  std::ofstream errors("errors", std::ios_base::binary);
 
   for (auto& cur_string : this->data) {
 
@@ -155,6 +179,10 @@ void Tester::test_encode_decode() {
       errors << cur_string << std::endl;
       errors << i << std::endl;
       ++error_count;
+    }
+    if (i % 200000 == 0) {
+      printf("Memory saved (percent): %f%%\n", 100 - 100.0 * mem1 / mem2);
+      printf("%lf\n", 100.0 * i / this->data.size());
     }
   }
   errors.close();
