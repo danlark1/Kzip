@@ -22,4 +22,4 @@ set(HEADERS
     src/Suffix_tree.h
     tester/tester.h)
 
-add_executable(tester ${SOURCES})
+add_executable(kzip ${SOURCES})
