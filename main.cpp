@@ -19,14 +19,14 @@ int main (int argc, char* argv[]) {
     std::cout << "KUTzip is here\n";
     std::cout << "To run program use ./tester [DICT SIZE] [PARSING ARGUMENT] [PATH TO FILE]\n";
     std::cout << "OPTIONS:\n";
-    std::cout << "DICT SIZE: [integer]. Dictionary size (6400 default) \n";
+    std::cout << "DICT SIZE: [integer]. Dictionary size (12400 default) \n";
     std::cout << "PARSING ARGUMENT: [\"true\", \"false\"]. Parsing with LE int(true) or \\n(false), (false default)\n";
     std::cout << "Use both or 0 arguments for correct running\n";
     return 0;
   }
-  if (argc >= 3) {
-    tester.readfile(argv[argc - 1]);
-    tester.learn_codec(std::atoi(argv[argc - 2]));
+  if (argc >= 3 && static_cast<std::string>(argv[argc - 2]) == "true") {
+    tester.readfile_uint(argv[argc - 1]);
+    tester.learn_codec(std::atoi(argv[argc - 3]));
   } else {
     tester.readfile(argv[argc - 1]);
     tester.learn_codec(0);
