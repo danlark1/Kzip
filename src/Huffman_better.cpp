@@ -20,6 +20,7 @@
 #include <fstream>
 #include <map>
 #include <queue>
+#include <cassert>
 #include <string>
 #include <utility>
 #include <vector>
@@ -80,7 +81,7 @@ namespace Codecs {
         --cur_size;
         --i;
       }
-      
+
       size_t size_of_path = trie.nodes[last_uz].code.size();
       while (j < size_of_path) {
         while (j < size_of_path && count) {
@@ -168,8 +169,8 @@ namespace Codecs {
 
   string HuffmanCodec::save() const {
     std::ofstream output("config", std::ios_base::binary);
-    for (const auto& c : ans) {
-      output << c.first.size() << " " << c.first << " " << c.second << std::endl;
+    for (const auto& str : ans) {
+      output << str.first.size() << " " << str.first << " " << str.second << std::endl;
     }
     output.close();
     return string();
@@ -259,7 +260,7 @@ namespace Codecs {
     }
     for (auto& str : IS_STRING_OK) {
       if (str.first.second.size() > 1) {
-        for (size_t i = 1; i + 1 < str.first.second.size(); ++i) {
+        for (size_t i = 1; i < str.first.second.size(); ++i) {
           string s_1;
           string s_2;
           for (size_t j = 0; j < i; ++j) {

@@ -181,8 +181,8 @@ void Tester::test_encode_decode() {
       ++error_count;
     }
     if (i % 200000 == 0) {
-      printf("Memory saved (percent): %f%%\n", 100 - 100.0 * mem1 / mem2);
-      printf("%lf\n", 100.0 * i / this->data.size());
+      printf("Memory saved (percent): %f%% ", 100 - 100.0 * mem1 / mem2);
+      printf("%lf%%\n", 100.0 * i / this->data.size());
     }
   }
   errors.close();
