@@ -1,9 +1,10 @@
 Кутенин Данила
 # compression project HSE
 
-1) huffman_better.
+1) kzip.
 
-To use tests juck make the project and run it with 1 
-argument "path to file". Tester will show the work of 
-the library.
+`mkdir build && cd build && cmake .. && make`
 
+Then write `./kzip --help` for help. And you can run tester that test my libary.
+
+Good luck!
