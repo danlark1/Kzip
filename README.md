@@ -5,6 +5,6 @@
 
 `mkdir build && cd build && cmake .. && make`
 
-Then write `./kzip --help` for help. And you can run tester that test my libary.
+Then write `./kzip --help` for help. And you can run tester that tests my libary.
 
 Good luck!
