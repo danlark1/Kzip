@@ -75,7 +75,7 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const size_
   return ans;
 }
 // length of an edge
-int32_t suff_tree::get_length(const int32_t v) const {
+inline int32_t suff_tree::get_length(const int32_t v) const {
   return (st[v].right - st[v].left);
 }
 

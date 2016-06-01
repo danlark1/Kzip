@@ -44,6 +44,7 @@ void Trie::insert(const std::string& s, const std::vector<int32_t>& code) {
     i = next(i, static_cast<unsigned char>(s[j]));
     ++j;
   }
+  
   if (j == s.size()) {
     nodes[i].is_terminal = true;
     nodes[i].code = code;

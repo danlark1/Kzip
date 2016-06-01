@@ -81,8 +81,8 @@ namespace Codecs {
         --cur_size;
         --i;
       }
-
       size_t size_of_path = trie.nodes[last_uz].code.size();
+
       while (j < size_of_path) {
         while (j < size_of_path && count) {
           buf <<= 1;
@@ -166,6 +166,7 @@ namespace Codecs {
       }
     }
   }
+
 
   string HuffmanCodec::save() const {
     std::ofstream output("config", std::ios_base::binary);
@@ -271,7 +272,7 @@ namespace Codecs {
           }
           if (IS_STRING_OK.count({s_1.size(), s_1}) && IS_STRING_OK.count({s_2.size(), s_2}) 
             && IS_STRING_OK[{s_1.size(), s_1}].second && IS_STRING_OK[{s_2.size(), s_2}].second) {
-            if (5 * IS_STRING_OK[{s_1.size(), s_1}].first * IS_STRING_OK[{s_2.size(), s_2}].first 
+            if (IS_STRING_OK[{s_1.size(), s_1}].first * IS_STRING_OK[{s_2.size(), s_2}].first 
               > str.second.first * static_cast<int64_t>(concat_size)) {
               str.second.second = false;
             }
@@ -303,6 +304,7 @@ namespace Codecs {
       to_check[s] = {0, 0};
     }
 
+    srand(time(NULL));
     std::random_shuffle(sample.begin(), sample.end());
     {
       std::string concat;
@@ -323,38 +325,47 @@ namespace Codecs {
       {
         suff_tree tree(concat);
         std::vector<std::pair<std::string, int64_t> > ans1 = tree.find_substr(dict_size);
-
         for (const auto& t : ans1) {
-          if (t.first.size() == 1) {
-            ans[static_cast<unsigned char>(t.first[0])].second = t.second;
-            to_check[t.first].second = t.second;
-          } else {
-            ans.push_back({t.first, t.second});
-            trie_ch.insert(t.first, {});
+          if (t.first.size() > 1) {
+            trie_ch.insert(t.first);
             to_check[t.first] = {0, t.second};
           }
         }
         ans1.clear();
       }
+
       int64_t uz = 0;
+      size_t size_uz = 0;
       string cur;
+      // for (size_t j = 0; j < sample.size(); ++h)
       for (size_t i = 0; i < concat.size(); ++i) {
         if (concat[i] != '\n') {
           if (trie_ch.is_next(uz, concat[i])) {
             uz = trie_ch.next(uz, concat[i]);
+            if (trie_ch.nodes[uz].is_terminal) {
+              size_uz = cur.size() + 1;
+            }
             cur.push_back(concat[i]);
           } else {
-            if (trie_ch.nodes[uz].is_terminal) {
-              ++to_check[cur].first;
+            while (cur.size() > size_uz) {
+              cur.pop_back();
+              --i;
             }
+            ++to_check[cur].first;
+
             cur.clear();
-            uz = 0;
+            cur.push_back(concat[i]);
+            uz = trie_ch.next(0, concat[i]);
+            size_uz = 1;
           }
         } else {
-          if (to_check.find(cur) != to_check.end() && trie_ch.nodes[uz].is_terminal) {
-            ++to_check[cur].first;
+          while (cur.size() > size_uz) {
+            cur.pop_back();
+            --i;
           }
+          ++to_check[cur].first;
           uz = 0;
+          size_uz = 0;
           cur.clear();
         }
       }
@@ -365,10 +376,13 @@ namespace Codecs {
     ans.resize(1 << CHAR_SIZE);
     {
       std::vector<std::pair<int64_t, std::string> > ans2;
-      for (const auto& c : to_check) {
-        if ((c.second.first > 0 && c.first.size() >= 2)) {
-          ans2.push_back({c.second.second, c.first});
+      for (const auto& str : to_check) {
+        // if string occurs at least once than add to dictionary
+        if ((str.second.first > 0 && str.first.size() >= 2)) {
+          ans2.push_back({str.second.first, str.first});
         }
+        ans[static_cast<unsigned char>(str.first[0])].second =
+        std::max(str.second.first, ans[static_cast<unsigned char>(str.first[0])].second);
       }
       sort(ans2.rbegin(), ans2.rend());
       for (const auto& c: ans2) {
@@ -376,6 +390,7 @@ namespace Codecs {
       }
     }
     shrinking(ans, concat_size);
+
 
     // need to use pair because of the non-deterministic Heap;
     std::priority_queue<std::pair<Node*, int64_t>,

@@ -55,7 +55,7 @@ private:
   int32_t cur;
   size_t n;
 
-  int32_t get_length(const int32_t v) const;
+  inline int32_t get_length(const int32_t v) const;
   Position go(Position pos, int32_t l, int32_t r);
   int32_t split(const Position pos);
   int32_t get_link(const int32_t v);

@@ -41,6 +41,7 @@ void Tester::readfile(const std::string& data_in_file) {
     this->data.push_back(cur_string);
   }
   input.close();
+  // sort(this->data.begin(), this->data.end());
   this->data.shrink_to_fit();
   printf("%zu strings were read\n", this->data.size());
 }
@@ -65,6 +66,7 @@ void Tester::readfile_uint(const std::string& data_in_file) {
     this->data.push_back(cur_string);
   }
   input.close();
+  // sort(this->data.begin(), this->data.end());
   this->data.shrink_to_fit();
   printf("%zu strings were read\n", this->data.size());
 }
@@ -151,8 +153,8 @@ void Tester::test_encode_decode() {
   double start;
   double finish;
   size_t error_count = 0;
+  
   std::ofstream errors("errors", std::ios_base::binary);
-
   for (auto& cur_string : this->data) {
 
     // start encoding
@@ -179,10 +181,6 @@ void Tester::test_encode_decode() {
       errors << cur_string << std::endl;
       errors << i << std::endl;
       ++error_count;
-    }
-    if (i % 200000 == 0) {
-      printf("Memory saved (percent): %f%% ", 100 - 100.0 * mem1 / mem2);
-      printf("%lf%%\n", 100.0 * i / this->data.size());
     }
   }
   errors.close();

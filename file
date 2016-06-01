@@ -1,19 +1,148 @@
-a
-a
-a
-a
-a
-a
-a
-aaaaaaaa
-aa
-a
-a
-a
-a
-a
+Everything in MBs
+
+data1 with shuffled strings
+file
+(533.552 max_memory)
+
+learn + load + file
+data1
+
+dict 6400
+compression rate 73.5%
+learning is successful in 1.211351
+encode ended in 9.953260
+decode ended in 5.308298
+(799.612 max_memory)
+
+dict 12400 --- default
+compression rate 76.05%
+learning is successful in 1.333162
+encode ended in 11.216043
+decode ended in 6.780965
+(799.412 max_memory)
+
+dict 32000
+compression rate 79.54%
+learning is successful in 1.796853
+encode ended in 19.207054
+decode ended in 8.140312
+(898.552 max_memory)
+THIS BEATS GZIP IN MEMORY AND ACCEPTABLE BY 512MB MEMORY MAX
+
+dict 64000
+compression rate 81.59%
+learning is successful in 3.319664
+encode ended in 26.866413
+decode ended in 7.870371
+(1350.936 max_memory)
+
+dict 150000
+compression rate 83.3%
+learning is successful in 12.910281
+encode ended in 30.485234
+decode ended in 8.844169
+(4859.132 max_memory)
+
+don't wanna to test it for 200000 dictionary, useless
+
+gzip 
+comresion rate 78.1%
+encode ended in 12.01
+decode ended in 2.51
+
+////
+
+data2 with shuffled strings
+file
+(1273.640 max_memory)
+
+learn + load + file
+data2 
+
+dict 6400
+compression rate 61.68%
+learning is successful in 1.226627
+encode ended in 8.265823
+decode ended in 6.851998
+(1272.968 max_memory)
+
+dict 12400 --- default
+compression rate 63.32%
+learning is successful in 1.273663
+encode ended in 9.209155
+decode ended in 8.223336
+(1273.212 max_memory)
+
+dict 64000
+compression rate 64.38%
+learning is successful in 1.883170
+encode ended in 10.442589
+decode ended in 9.896541
+(1332.200 max_memory)
+
+dict 150000
+compression rate 64.82%
+learning is successful in 2.953230
+encode ended in 12.963591
+decode ended in 10.119174
+(1793.368 max_memory)
+
+dict 200000
+compression rate 65.05%
+learning is successful in 3.520143
+encode ended in 15.662866
+decode ended in 11.526578
+(2120.056 max_memory)
+
+gzip 
+comresion rate 66.5%
+encode ended in 10.94
+decode ended in 2.55
 
 
-a
+////
 
-a
+data3 with shuffled strings
+
+file
+(2039.736 max_memory)
+
+dict 6400
+compression rate 53.95%
+learning is successful in 1.627496
+encode ended in 9.036489
+decode ended in 8.555313
+(2040.212 max_memory)
+
+dict 12400 --- default
+compression rate 56.17%
+learning is successful in 1.724270
+encode ended in 10.155784
+decode ended in 9.594047
+(2038.880 max_memory) (YEAH, less than the file itself)
+
+dict 64000
+comression rate 61.22%
+learning is successful in 2.677720
+encode ended in 15.240758
+decode ended in 11.856124
+(2280.012 max_memory)
+
+dict 150000
+compression rate 63.03%
+learning is successful in 5.547234
+encode ended in 17.388481
+decode ended in 11.970366
+(2867.624 max_memory)
+
+dict 200000
+compression rate 63.48%
+learning is successful in 6.187234
+encode ended in 17.508481
+decode ended in 11.770366
+(3094.932 max_memory)
+
+gzip
+compression rate 60.9%
+encode ended in 60.49s
+decode ended in 3.55s
