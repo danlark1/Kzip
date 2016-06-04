@@ -187,7 +187,8 @@ void Tester::test_encode_decode() {
   printf("encode ended in %f\n", (time_en) / CLOCKS_PER_SEC);
   printf("decode ended in %f\n", (time_dec) / CLOCKS_PER_SEC);
   printf("Memory saved (MBs): %f\n", 1.0 * ((long long)mem2 - (long long)mem1) / 1024 / 1024);
-  printf("Memory saved (percent): %f%%\n", 100 - 100.0 * mem1 / mem2);
+  // max dict size is 1mb in average
+  printf("Memory saved (percent): %f%%\n", 100 - 100.0 * (mem1 + 1000) / mem2);
   printf("%zu errors were occured\n", error_count);
 }
 
@@ -258,7 +259,7 @@ void Tester::saved_memory() {
     ++encoded_it;
   }
   printf("Memory saved (MBs): %f\n", 1.0 * saved / 1024 / 1024);
-  printf("Memory saved (percent): %f%%\n", 100 - 100.0 * mem1 / mem2);
+  printf("Memory saved (percent): %f%%\n", 100 - 100.0 * (mem1 + 1000) / mem2);
 }
 
 void Tester::reset() {
