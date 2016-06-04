@@ -203,6 +203,10 @@ void Tester::test_decode() {
   printf("decode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
+void Tester::load() {
+  this->codec->load("config");
+}
+
 void Tester::save_info() {
   std::ofstream out("config1");
   out << encoded_data.size() << '\n';

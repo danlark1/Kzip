@@ -35,7 +35,7 @@ namespace Codecs {
     Node* root_for_decode;
     void shrinking(std::vector<std::pair<std::string, int64_t> >& ans_copy, const size_t concat_size);
     std::vector<std::pair<std::string, int64_t> > ans;
-    void Build_table(Node* root, std::vector<int32_t>& code);
+    void Build_table(Node* root, std::vector<int8_t>& code);
     void build_jumps(Node* a);
   };
 

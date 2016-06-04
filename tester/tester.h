@@ -24,6 +24,7 @@ public:
   void test_encode();
   void test_decode();
   void reset();
+  void load();
   void test_encode_decode();
 protected:
   Codecs::CodecIFace* codec;

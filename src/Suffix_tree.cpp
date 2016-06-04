@@ -42,7 +42,8 @@ suff_tree::~suff_tree() {
   s.shrink_to_fit();
 }
 
-std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const size_t dict_size) {
+std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const
+ size_t dict_size, const unsigned char min_char) {
   dfs(0);
   std::vector<std::pair<int32_t, int32_t> > p;
   for (size_t i = 1; i < st.size(); ++i) {
@@ -57,7 +58,7 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const size_
     flag = false;
     for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; 
       pop < st[p[i].second].right; ++pop) {
-      if (s[pop] == '\n') {
+      if (s[pop] == min_char) {
         flag = true;
         break;
       }

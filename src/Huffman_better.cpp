@@ -77,7 +77,7 @@ namespace Codecs {
         }
         ++cur_size;
       }
-      while (__builtin_expect(cur_size > len_uz, false)) {
+      while (cur_size > len_uz) {
         --cur_size;
         --i;
       }
@@ -178,7 +178,7 @@ namespace Codecs {
   }
 
   void HuffmanCodec::Build_table(Node* root_for_table,
-    std::vector<int32_t>& code) {
+    std::vector<int8_t>& code) {
     if (root_for_table->left != nullptr) {
       code.push_back(false);
       Build_table(root_for_table->left, code);
@@ -248,6 +248,10 @@ namespace Codecs {
     }
     root_for_decode = table_cur.top().first;
     build_jumps(root_for_decode);
+    std::vector<int8_t> code;
+    Build_table(root_for_decode, code);
+    code.clear();
+    code.shrink_to_fit();
   }
 
   size_t HuffmanCodec::sample_size(size_t records_total) const {
@@ -303,6 +307,21 @@ namespace Codecs {
       trie_ch.insert(s, {});
       to_check[s] = {0, 0};
     }
+    std::vector<int64_t> least_char;
+    least_char.resize(1 << CHAR_SIZE);
+    for (size_t i = 0; i < sample.size(); ++i) {
+      for (size_t j = 0; j < sample[i].size(); ++j) {
+        ++least_char[static_cast<unsigned char>(sample[i][j])];
+      }
+    }
+    unsigned char min_char = 0;
+    int64_t min_freq = least_char[0];
+    for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
+      if (least_char[c] < min_freq) {
+        min_freq = least_char[c];
+        min_char = static_cast<unsigned char>(c);
+      }
+    }
 
     srand(time(NULL));
     std::random_shuffle(sample.begin(), sample.end());
@@ -311,7 +330,7 @@ namespace Codecs {
       concat.reserve(MAX_CONCAT_SIZE);
       int64_t cnt_letters = 0;
       for (size_t i = 0; i < sample.size(); ++i) {
-        concat += sample[i].to_string() + '\n';
+        concat += sample[i].to_string() + std::string(1, min_char);
         cnt_letters += sample[i].size() + 1;
         if (cnt_letters >= static_cast<int64_t>(MAX_CONCAT_SIZE)) {
           concat.resize(MAX_CONCAT_SIZE);
@@ -319,12 +338,12 @@ namespace Codecs {
           break;
         }
       }
-      concat += '\n';
+      concat += std::string(1, min_char);
       concat_size = concat.size();
 
       {
         suff_tree tree(concat);
-        std::vector<std::pair<std::string, int64_t> > ans1 = tree.find_substr(dict_size);
+        std::vector<std::pair<std::string, int64_t> > ans1 = tree.find_substr(dict_size, min_char);
         for (const auto& t : ans1) {
           if (t.first.size() > 1) {
             trie_ch.insert(t.first);
@@ -337,9 +356,8 @@ namespace Codecs {
       int64_t uz = 0;
       size_t size_uz = 0;
       string cur;
-      // for (size_t j = 0; j < sample.size(); ++h)
       for (size_t i = 0; i < concat.size(); ++i) {
-        if (concat[i] != '\n') {
+        if (static_cast<unsigned char>(concat[i]) != min_char) {
           if (trie_ch.is_next(uz, concat[i])) {
             uz = trie_ch.next(uz, concat[i]);
             if (trie_ch.nodes[uz].is_terminal) {
@@ -352,7 +370,6 @@ namespace Codecs {
               --i;
             }
             ++to_check[cur].first;
-
             cur.clear();
             cur.push_back(concat[i]);
             uz = trie_ch.next(0, concat[i]);
@@ -363,7 +380,9 @@ namespace Codecs {
             cur.pop_back();
             --i;
           }
-          ++to_check[cur].first;
+          if (cur.size() != 0) {
+            ++to_check[cur].first;
+          }
           uz = 0;
           size_uz = 0;
           cur.clear();
@@ -412,7 +431,7 @@ namespace Codecs {
       ++i;
     }
     root_for_decode = table_cur.top().first;
-    std::vector<int32_t> code;
+    std::vector<int8_t> code;
     Build_table(root_for_decode, code);
     code.clear();
     code.shrink_to_fit();
