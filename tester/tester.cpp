@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <random>
 #include <iostream>
 
 template <typename Iter>
@@ -187,7 +188,7 @@ void Tester::test_encode_decode() {
   printf("encode ended in %f\n", (time_en) / CLOCKS_PER_SEC);
   printf("decode ended in %f\n", (time_dec) / CLOCKS_PER_SEC);
   printf("Memory saved (MBs): %f\n", 1.0 * ((long long)mem2 - (long long)mem1) / 1024 / 1024);
-  // max dict size is 1mb in average
+  // max dict size is 1mb on average
   std::ifstream file("config", std::ios::binary | std::ios::ate);
   printf("Memory saved (percent): %f%%\n", 100 - 100.0 * (mem1 + file.tellg()) / mem2);
   printf("%zu errors were occured\n", error_count);
@@ -222,6 +223,7 @@ void Tester::check_correctness() {
 
   int64_t error_count = 0;
   if (this->data.size() != this->decoded_data.size()) {
+    printf("incorrect size of decoded stream\n");
     return;
   }
   auto data_it = this->data.begin();

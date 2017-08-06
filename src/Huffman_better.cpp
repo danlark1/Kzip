@@ -40,10 +40,6 @@ namespace Codecs {
     }
   };
 
-  HuffmanCodec::HuffmanCodec() {}
-
-  HuffmanCodec::~HuffmanCodec() {}
-
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     if (__builtin_expect(raw.size() == 0, false)) {
       return;
@@ -161,7 +157,7 @@ namespace Codecs {
       ++count;
       if (count == CHAR_SIZE ||
         (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) 
-        == count) {
+          == count) {
         break;
       }
     }
@@ -179,12 +175,12 @@ namespace Codecs {
 
   void HuffmanCodec::Build_table(Node* root_for_table,
     std::vector<int8_t>& code) {
-    if (root_for_table->left != nullptr) {
+    if (root_for_table->left) {
       code.push_back(false);
       Build_table(root_for_table->left, code);
     }
 
-    if (root_for_table->right != nullptr) {
+    if (root_for_table->right) {
       code.push_back(true);
       Build_table(root_for_table->right, code);
     }
@@ -334,7 +330,6 @@ namespace Codecs {
         cnt_letters += sample[i].size() + 1;
         if (cnt_letters >= static_cast<int64_t>(MAX_CONCAT_SIZE)) {
           concat.resize(MAX_CONCAT_SIZE);
-          // constant TODO(danlark1)
           break;
         }
       }
@@ -457,7 +452,7 @@ namespace Codecs {
       }
       node->to_go[byte].second = cur;
     }
-    if (node->left != nullptr) {
+    if (node->left) {
       build_jumps(node->left);
       build_jumps(node->right);
     }
@@ -466,7 +461,7 @@ namespace Codecs {
   void HuffmanCodec::reset() {
     ans.clear();
     ans.shrink_to_fit();
-    if (root_for_decode != nullptr) {
+    if (root_for_decode) {
       delete root_for_decode;
     }
   }

@@ -51,7 +51,7 @@ int main (int argc, char* argv[]) {
   globalArgs.input = NULL;
 
   while ((opt = getopt_long(argc, argv, optString, longOpts, &longIndex)) != -1) {
-    switch(opt) {
+    switch (opt) {
       case 'h': {
         display_usage();
         break;
@@ -74,7 +74,7 @@ int main (int argc, char* argv[]) {
         break;
       }
       case '?': default: {
-        puts("found unknown option, try --help or -h for help");
+        fprintf(stderr, "found unknown option, try --help or -h for help");
         exit(EXIT_FAILURE);
         break;
       };
@@ -82,7 +82,7 @@ int main (int argc, char* argv[]) {
   }
 
   if (count_files == 0 || count_files >= 2) {
-    puts("no file to decode or too many files");
+    fprintf(stderr, "no file to decode or too many files");
     exit(EXIT_FAILURE);
   }
 
@@ -91,7 +91,7 @@ int main (int argc, char* argv[]) {
   } else if (globalArgs.parse == 0) {
     tester.readfile(globalArgs.input);
   } else {
-    puts("invalid argument for parsing");
+    fprintf(stderr, "invalid argument for parsing");
     exit(EXIT_FAILURE);
   }
 

@@ -14,9 +14,9 @@
 
 namespace Codecs {
 
-  const size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
-  const size_t LOG_CHAR_SIZE = ceil(log(CHAR_SIZE));
-  const size_t MAX_CONCAT_SIZE = 1e6;
+  constexpr size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
+  constexpr size_t LOG_CHAR_SIZE = ceil(log(CHAR_SIZE));
+  constexpr size_t MAX_CONCAT_SIZE = 1e6;
 
   class HuffmanCodec : public CodecIFace {
   public:
@@ -27,8 +27,8 @@ namespace Codecs {
     size_t sample_size(size_t records_total) const override;
     void learn(StringViewVector&, const size_t dict_size) override;
     void reset() override;
-    ~HuffmanCodec();
-    HuffmanCodec();
+    // ~HuffmanCodec();
+    // HuffmanCodec();
   private:
     size_t concat_size;
     Trie trie;
