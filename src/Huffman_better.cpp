@@ -41,49 +41,55 @@ namespace Codecs {
   };
 
   void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
+    // empty strings should remain empty
     if (__builtin_expect(raw.size() == 0, false)) {
       return;
     }
-    encoded.reserve(2 * raw.size());
+    // reserve 2 bigger than we have for speeding up
+    encoded.reserve(raw.size() << 1);
+    // buffer char for adding to encoded string
     unsigned char buf = 0;
+    // count for how many bits we can afford for
     int8_t count = CHAR_SIZE - LOG_CHAR_SIZE;
-    size_t j = 0;
-    size_t i = 0;
+    // which bit we can add
+    size_t code_index = 0;
+    // which char we are looking at
+    size_t raw_index = 0;
+    // uzel for cur vertex in trie
     size_t uz = 0;
-    size_t len_uz = 0;
+    // copy raw for size of encoded string
+    size_t copy_raw = 0;
+    // last uzel
     size_t last_uz = 0;
 
-    size_t cur_size = 0;
 
-    while (i < raw.size()) {
-      j = 0;
+    while (raw_index < raw.size()) {
+      // init
+      code_index = 0;
       uz = 0;
-      cur_size = 1;
+      copy_raw = raw_index;
 
-      uz = trie.next(uz, static_cast<unsigned char>(raw[i]));
+      // one symbol will always be mathched
+      uz = trie.next(uz, static_cast<unsigned char>(raw[raw_index]));
       last_uz = uz;
-      len_uz = 1;
 
-      while (i + 1 < raw.size() && trie.is_next(uz, raw[i + 1])) {
-        uz = trie.next(uz, raw[i + 1]);
-        ++i;
+      // finding max mathching string
+      while (raw_index + 1 < raw.size() && trie.is_next(uz, raw[raw_index + 1])) {
+        uz = trie.next(uz, raw[raw_index + 1]);
+        ++raw_index;
         if (trie.nodes[uz].is_terminal) {
-          len_uz = cur_size + 1;
+          copy_raw = raw_index;
           last_uz = uz;
         }
-        ++cur_size;
       }
-      while (cur_size > len_uz) {
-        --cur_size;
-        --i;
-      }
+      raw_index = copy_raw;
       size_t size_of_path = trie.nodes[last_uz].code.size();
-
-      while (j < size_of_path) {
-        while (j < size_of_path && count) {
+      // add the code to the buffer
+      while (code_index < size_of_path) {
+        while (code_index < size_of_path && count) {
           buf <<= 1;
-          buf += trie.nodes[last_uz].code[j];
-          ++j;
+          buf += trie.nodes[last_uz].code[code_index];
+          ++code_index;
           --count;
         }
         if (!count) {
@@ -92,23 +98,23 @@ namespace Codecs {
           buf = 0;
         }
       }
-      ++i;
+      ++raw_index;
     }
+    // this happens with probability 3/8
     if (__builtin_expect(count != CHAR_SIZE, true)) {
       encoded.push_back(buf << count);
     }
-    unsigned char c = encoded[0];
-    c |= (static_cast<unsigned char>(CHAR_SIZE - count)) <<
-     (CHAR_SIZE - LOG_CHAR_SIZE);
-    encoded[0] = c;
+    // first "three" bits for last char
+    encoded[0] |= (static_cast<unsigned char>(CHAR_SIZE - count)) <<
+      (CHAR_SIZE - LOG_CHAR_SIZE);
   }
 
 
   void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
-    if (encoded.size() == 0) {
+    if (!encoded.size()) {
       return;
     }
-    raw.reserve(2 * encoded.size());
+    raw.reserve(encoded.size() << 1);
     int8_t count = LOG_CHAR_SIZE;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
