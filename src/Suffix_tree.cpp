@@ -31,17 +31,6 @@ suff_tree::suff_tree(const std::string& str) {
   }
 }
 
-suff_tree::~suff_tree() {
-  sum_str.clear();
-  sum_str.shrink_to_fit();
-  num_of_lists.clear();
-  num_of_lists.shrink_to_fit();
-  st.clear();
-  st.shrink_to_fit();
-  s.clear();
-  s.shrink_to_fit();
-}
-
 std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const
  size_t dict_size, const unsigned char min_char) {
   dfs(0);
@@ -208,3 +197,5 @@ void suff_tree::dfs(int32_t start) {
     }
   }
 }
+
+

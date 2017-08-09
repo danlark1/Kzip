@@ -67,8 +67,3 @@ bool Trie::is_next(int32_t uz, unsigned char c) const {
 int32_t Trie::next(int32_t uz, unsigned char c) const {
   return nodes[uz].next[c];
 }
-
-Trie::~Trie() {
-  // nodes.clear();
-  nodes.shrink_to_fit();
-}

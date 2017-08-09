@@ -11,12 +11,9 @@ struct Uzel {
   bool is_terminal;
   std::vector<int32_t> next;
   std::vector<int8_t> code;
-  Uzel(bool is_end) {
-    is_terminal = is_end;
+  Uzel(bool is_end) : is_terminal(is_end) {
     this->next.resize(1 << CHAR_SIZE);
-    for (size_t i = 0; i < (1 << CHAR_SIZE); ++i) {
-      next[i] = -1;
-    }
+    std::fill(next.begin(), next.end(), -1);
   }
 };
 
@@ -26,7 +23,6 @@ private:
 public:
   std::vector<Uzel> nodes;
   Trie();
-  ~Trie();
   void insert(const std::string& s);
   void insert(const std::string& s, const std::vector<int8_t>& code);
   bool is_next(int32_t uz, unsigned char c) const;

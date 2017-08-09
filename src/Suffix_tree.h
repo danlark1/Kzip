@@ -12,25 +12,15 @@
 // levels we have to jump up
 struct Position {
   int32_t vertex, len_up;
-  Position(int32_t v, int32_t up) {
-    this->vertex = v;
-    this->len_up = up;
-  }
+  Position(int32_t v, int32_t up) : vertex(v), len_up(up) {}
 };
 
 // Node_s of suffix tree
 struct Node_s {
   int32_t parent, left, right, link;  //  [left, right)
   std::unordered_map<unsigned char, int32_t> next;
-  Node_s(int32_t l, int32_t r, int32_t p, int32_t suflink = -1) {
-    this->parent = p;
-    this->left = l;
-    this->right = r; 
-    this->link = suflink;
-  }
-  ~Node_s() {
-    next.clear();
-  }
+  Node_s(int32_t l, int32_t r, int32_t p, int32_t suflink = -1) : 
+    parent(p), left(l), right(r), link(suflink) {}
 };
 
 
@@ -38,7 +28,6 @@ class suff_tree {
 
 public:
   suff_tree(const std::string& str);
-  ~suff_tree();
   std::vector<std::pair<std::string, int64_t> > 
   find_substr(const size_t dict_size, const unsigned char min_char);
 

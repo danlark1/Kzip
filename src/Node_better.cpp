@@ -5,16 +5,11 @@
 #include <vector>
 #include <string>
 
-Node::Node() {
-  left = nullptr;
-  right = nullptr;
-  frequency = 0;
-  data = "";
-}
+Node::Node() : left(nullptr), right(nullptr), frequency(0), data("") {}
 
-Node::Node(std::string d, int64_t s, Node_type t) { // make a leaf
+Node::Node(const std::string& d, const int64_t s, const Node_type t) { // make a leaf
   type = t;
-  data = d;
+  data = std::move(d);
   frequency = s;
   left = nullptr;
   right = nullptr;
@@ -36,9 +31,7 @@ Node::Node(Node* l, Node* r, Node_type t) { // make a bind
 }
 
 Node::~Node() {
-  to_go.clear();
-  to_go.shrink_to_fit();
-  if (this->left != nullptr) {
+  if (this->left) {
     delete left;
     delete right;
   }
