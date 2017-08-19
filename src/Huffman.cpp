@@ -8,8 +8,8 @@
 */
 
 // SELF-MADE LIBRARIES
-#include "Huffman_better.h"
-#include "Node_better.h"
+#include "Huffman.h"
+#include "Node.h"
 #include "Suffix_tree.h"
 #include "Trie.h"
 
@@ -70,7 +70,7 @@ namespace Codecs {
       copy_raw = raw_index;
 
       // one symbol will always be mathched
-      uz = trie.next(uz, static_cast<unsigned char>(raw[raw_index]));
+      uz = trie.next(uz, raw[raw_index]);
       last_uz = uz;
 
       // finding max mathching string
@@ -325,6 +325,7 @@ namespace Codecs {
       }
     }
 
+    // ayee, boy
     srand(time(NULL));
     std::random_shuffle(sample.begin(), sample.end());
     {

@@ -1,5 +1,5 @@
 // SELF-MADE
-#include "Node_better.h"
+#include "Node.h"
 
 // NEEDED LIBRARIES
 #include <vector>

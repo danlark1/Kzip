@@ -2,7 +2,7 @@
 
 // SELF-MADE
 #include "../codecs/codec.h"
-#include "Node_better.h"
+#include "Node.h"
 #include "Trie.h"
 #include "Suffix_tree.h"
 

@@ -8,16 +8,16 @@ include_directories("tester/" "src/" "codecs/")
 
 set(SOURCES
     main.cpp
-    src/Huffman_better.cpp
-    src/Node_better.cpp
+    src/Huffman.cpp
+    src/Node.cpp
     src/Trie.cpp
     src/Suffix_tree.cpp
     tester/tester.cpp)
 
 set(HEADERS
     codec/codec.h
-    src/Huffman_better.h
-    src/Node_better.h
+    src/Huffman.h
+    src/Node.h
     src/Trie.h
     src/Suffix_tree.h
     tester/tester.h)

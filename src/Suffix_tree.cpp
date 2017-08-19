@@ -19,10 +19,10 @@ suff_tree::suff_tree(const std::string& str) {
   n = str.size();
 
   //  vertices cant be more than 2 * n.
-  for (size_t i = 0; i < 2 * n; ++i) {
-    num_of_lists.push_back(0);
-    sum_str.push_back(0);
-  }
+  num_of_lists.resize(n << 1);
+  sum_str.resize(n << 1);
+  std::fill(num_of_lists.begin(), num_of_lists.end(), 0);
+  std::fill(sum_str.begin(), sum_str.end(), 0);
   cur = 1;
   Position pos(0, 0);
   st.push_back(Node_s(0, 0, -1));

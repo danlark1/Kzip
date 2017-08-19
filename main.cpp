@@ -1,4 +1,4 @@
-#include "Huffman_better.h"
+#include "Huffman.h"
 #include "tester.h"
 #include <algorithm>
 #include <string>
