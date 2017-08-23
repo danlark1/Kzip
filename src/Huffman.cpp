@@ -119,27 +119,22 @@ namespace Codecs {
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
     int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 1;
-
-    while (encoded_size >= 1) {
-      if (byte & (1 << (CHAR_SIZE - count - 1))) {
-        cur = cur->right;
-      } else {
-        cur = cur->left;
-      }
-      if (!cur->left) {
-        raw += cur->getData();
-        cur = root_for_decode;
-      }
-      ++count;
-      if (count == CHAR_SIZE || (encoded_size == 0 && 
-        (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) 
-        == count)) {
-        count = 0;
-        if (encoded_size >= 1) {
-          byte = encoded[1];
+    
+    if (encoded_size >= 1) {
+      while (count != CHAR_SIZE) {
+        if (byte & (1 << (CHAR_SIZE - count - 1))) {
+          cur = cur->right;
+        } else {
+          cur = cur->left;
         }
-        break;
+        if (!cur->left) {
+          raw += cur->getData();
+          cur = root_for_decode;
+        }
+        ++count;
       }
+      count = 0;
+      byte = encoded[1];
     }
 
     // till almost the last element
@@ -230,7 +225,7 @@ namespace Codecs {
 
 
     std::priority_queue<std::pair<Node*, int64_t>,
-     std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
+    std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
     int64_t i = 0;
     for (const auto& c : ans) {
       Node* p = new Node(c.first, c.second);

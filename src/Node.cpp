@@ -3,6 +3,7 @@
 
 // NEEDED LIBRARIES
 #include <vector>
+#include <algorithm>
 #include <string>
 
 Node::Node() : left(nullptr), right(nullptr), frequency(0), data("") {}
@@ -13,9 +14,8 @@ Node::Node(const std::string& d, const int64_t s, const Node_type t) { // make a
   frequency = s;
   left = nullptr;
   right = nullptr;
-  for (size_t i = 0; i < (1 << CHAR_SIZE); ++i) {
-    to_go.push_back({"", nullptr});
-  }
+  to_go.resize(1 << CHAR_SIZE);
+  std::fill(to_go.begin(), to_go.end(), std::make_pair("", nullptr));
 }
 
 Node::Node(Node* l, Node* r, Node_type t) { // make a bind
@@ -24,10 +24,9 @@ Node::Node(Node* l, Node* r, Node_type t) { // make a bind
   data.shrink_to_fit();
   frequency = l->getFrequency() + r->getFrequency();
   left = l;
-  right = r;  
-  for (size_t i = 0; i < (1 << CHAR_SIZE); ++i) {
-    to_go.push_back({"", nullptr});
-  }
+  right = r;
+  to_go.resize(1 << CHAR_SIZE);
+  std::fill(to_go.begin(), to_go.end(), std::make_pair("", nullptr));
 }
 
 Node::~Node() {

@@ -35,11 +35,15 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const
  size_t dict_size, const unsigned char min_char) {
   dfs(0);
   std::vector<std::pair<int32_t, int32_t> > p;
-  for (size_t i = 1; i < st.size(); ++i) {
-    p.push_back({num_of_lists[i], i});
-  }
+  p.resize(st.size() - 1);
+  std::generate(p.begin(), p.end(), [&] {
+    static auto i_temp = 0;
+    ++i_temp;
+    return std::make_pair(num_of_lists[i_temp], i_temp);
+  });
   stable_sort(p.begin(), p.end());
-  int32_t k = 0, i = p.size() - 1;
+  int32_t k = 0;
+  int32_t i = p.size() - 1;
   size_t j = 0;
   bool flag = false;
   std::vector<std::pair<std::string, int64_t> > ans;
@@ -127,7 +131,7 @@ int32_t suff_tree::get_link(const int32_t v) {
   }
   int32_t to = get_link(st[v].parent);
   int32_t returned = split(go(Position(to, get_length(to)), st[v].left +
-    (st[v].parent == 0 ? 1 : 0), st[v].right));
+    (st[v].parent == 0), st[v].right));
   st[v].link = returned;
   return returned;
 }
@@ -170,9 +174,9 @@ void suff_tree::dfs(int32_t start) {
   while (!STACK.empty()) {
     int64_t v = STACK.top();
     STACK.pop();
-    if (static_cast<size_t>(v) >= 2 * n) {
-      for (auto& it : st[v - 2 * n].next) {
-        num_of_lists[v - 2 * n] += num_of_lists[it.second];
+    if (static_cast<size_t>(v) >= (n << 1)) {
+      for (auto& it : st[v - (n << 1)].next) {
+        num_of_lists[v - (n << 1)] += num_of_lists[it.second];
       } 
       continue;
     }       
@@ -190,7 +194,7 @@ void suff_tree::dfs(int32_t start) {
     if (st[v].next.size() == 0) {
       num_of_lists[v] = 1;
     } else {
-      STACK.push(2 * n + v);
+      STACK.push((n << 1) + v);
       for (auto& it : st[v].next) {
         STACK.push(it.second);
       }
