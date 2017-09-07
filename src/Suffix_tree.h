@@ -1,12 +1,12 @@
 #pragma once
-#include <unordered_map>
-#include <cstdio>
-#include <algorithm>
-#include <vector>
-#include <string>
-#include <cmath>
-#include <fstream>
 
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <fstream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 // positions are characterized by the vertex and how many
 // levels we have to jump up

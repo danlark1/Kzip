@@ -5,36 +5,37 @@
 
 
 #include "tester.h"
+
 #include <cstdio>
 #include <ctime>
-#include <vector>
-#include <string>
 #include <fstream>
-#include <random>
 #include <iostream>
+#include <random>
+#include <string>
+#include <vector>
 
 template <typename Iter>
-void select_sample(StringViewVector& sample, Iter begin, Iter end,
+void SelectSample(StringViewVector& sample, Iter begin, Iter end,
   size_t sample_size) {
   std::experimental::sample(begin, end, std::back_inserter(sample),
     sample_size, std::mt19937(std::random_device()()));
 }
 
-void Tester::learn_codec(const size_t dict_size) {
+void Tester::LearnCodec(const size_t dict_size) {
   StringViewVector sample;
-  select_sample(sample, this->data.begin(), this->data.end(),
-    this->codec->sample_size(this->data.size()));
+  SelectSample(sample, this->data.begin(), this->data.end(),
+    this->codec->SampleSize(this->data.size()));
   double start = clock();
   if (dict_size == 0) {
-    this->codec->learn(sample, 12400);
+    this->codec->Learn(sample, 12400);
   } else {
-    this->codec->learn(sample, dict_size);
+    this->codec->Learn(sample, dict_size);
   }
   double finish = clock();
   printf("learning is successful in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
-void Tester::readfile(const std::string& data_in_file) {
+void Tester::ReadFile(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
   std::string cur_string;
   while (input.good()) {
@@ -47,7 +48,7 @@ void Tester::readfile(const std::string& data_in_file) {
   printf("%zu strings were read\n", this->data.size());
 }
 
-void Tester::readfile_uint(const std::string& data_in_file) {
+void Tester::ReadFileUint(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
   while (input.good()) {
     std::string cur_string;
@@ -72,7 +73,7 @@ void Tester::readfile_uint(const std::string& data_in_file) {
   printf("%zu strings were read\n", this->data.size());
 }
 
-void Tester::write_encoded_file(const std::string& where_to) {
+void Tester::WriteEncodedFile(const std::string& where_to) {
   std::ofstream output(where_to, std::ios_base::binary);
   for (size_t i = 0; i + 1 < encoded_data.size(); ++i) {
     output << encoded_data[i] << '\n';
@@ -83,7 +84,7 @@ void Tester::write_encoded_file(const std::string& where_to) {
   output.close();
 }
 
-void Tester::write_decoded_file(const std::string& where_to) {
+void Tester::WriteDecodedFile(const std::string& where_to) {
   std::ofstream output(where_to, std::ios_base::binary);
   for (size_t i = 0; i + 1 < decoded_data.size(); ++i) {
     output << decoded_data[i] << '\n';
@@ -95,7 +96,7 @@ void Tester::write_decoded_file(const std::string& where_to) {
 }
 
 
-void Tester::read_decoded_file(const std::string& from) {
+void Tester::ReadDecodedFile(const std::string& from) {
   std::ifstream input(from, std::ios_base::binary);
   std::ifstream conf("config1");
   encoded_data.clear();
@@ -119,33 +120,33 @@ void Tester::read_decoded_file(const std::string& from) {
   conf.close();
 }
 
-void Tester::save_config() {
-  std::string out = this->codec->save();
+void Tester::SaveConfig() {
+  this->codec->Save("config");
 }
 
 
-void Tester::set_codec(Codecs::CodecIFace* codec) {
+void Tester::SetCodec(Codecs::CodecIFace* codec) {
   this->codec = codec;
 }
 
-void Tester::test_encode() {
+void Tester::TestEncode() {
   double start = 1.0 * clock();
   size_t i = 0;
   for (auto& cur_string : this->data) {
     std::string out;
     ++i;
-    this->codec->encode(out, cur_string);
+    this->codec->Encode(out, cur_string);
     this->encoded_data.push_back(out);
   }
   double finish = 1.0 * clock();
   printf("encode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
-void Tester::test_encode_decode() {
+void Tester::TestEncodeDecode() {
   size_t i = 0;
-  std::string out = this->codec->save();
-  this->codec->reset();
-  this->codec->load("config");
+  this->codec->Save("config");
+  this->codec->Reset();
+  this->codec->Load("config");
   size_t mem1 = 0;
   size_t mem2 = 0;
 
@@ -161,7 +162,7 @@ void Tester::test_encode_decode() {
     // start encoding
     std::string out;
     start = clock();
-    this->codec->encode(out, cur_string);
+    this->codec->Encode(out, cur_string);
     finish = clock();
     time_en += finish - start;
 
@@ -170,7 +171,7 @@ void Tester::test_encode_decode() {
     std::string another;
 
     start = clock();
-    this->codec->decode(another, out);
+    this->codec->Decode(another, out);
     finish = clock();
     time_dec += finish - start;
 
@@ -194,23 +195,23 @@ void Tester::test_encode_decode() {
   printf("%zu errors were occured\n", error_count);
 }
 
-void Tester::test_decode() {
-  this->codec->load("config");
+void Tester::TestDecode() {
+  this->codec->Load("config");
   double start = 1.0 * clock();
   for (auto& cur_string : this->encoded_data) {
     std::string out;
-    this->codec->decode(out, cur_string);
+    this->codec->Decode(out, cur_string);
     this->decoded_data.push_back(out);
   }
   double finish = 1.0 * clock();
   printf("decode ended in %f\n", (finish - start) / CLOCKS_PER_SEC);
 }
 
-void Tester::load() {
-  this->codec->load("config");
+void Tester::Load() {
+  this->codec->Load("config");
 }
 
-void Tester::save_info() {
+void Tester::SaveInfo() {
   std::ofstream out("config1");
   out << encoded_data.size() << '\n';
   for (auto& cur_string : encoded_data) {
@@ -219,7 +220,7 @@ void Tester::save_info() {
   out.close();
 }
 
-void Tester::check_correctness() {
+void Tester::CheckCorrectness() {
 
   int64_t error_count = 0;
   if (this->data.size() != this->decoded_data.size()) {
@@ -245,7 +246,7 @@ void Tester::check_correctness() {
   printf("%f percent errors were occured\n", perc_errors);
 }
 
-void Tester::saved_memory() {
+void Tester::SavedMemory() {
   int64_t saved = 0;
   int64_t mem1 = 0;
   int64_t mem2 = 0;
@@ -266,7 +267,7 @@ void Tester::saved_memory() {
   printf("Memory saved (percent): %f%%\n", 100 - 100.0 * (mem1 + file.tellg()) / mem2);
 }
 
-void Tester::reset() {
+void Tester::Reset() {
   this->data.clear();
   this->data.shrink_to_fit();
   this->decoded_data.clear();

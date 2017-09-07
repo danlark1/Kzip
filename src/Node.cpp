@@ -1,10 +1,9 @@
 // SELF-MADE
 #include "Node.h"
 
-// NEEDED LIBRARIES
-#include <vector>
 #include <algorithm>
 #include <string>
+#include <vector>
 
 Node::Node() : left(nullptr), right(nullptr), frequency(0), data("") {}
 

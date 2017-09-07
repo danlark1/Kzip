@@ -1,12 +1,16 @@
 #include "Huffman.h"
 #include "tester.h"
-#include <algorithm>
-#include <string>
-#include <cstdio>
-#include <unistd.h>
-#include <iostream>
+
 #include <getopt.h>
+
+#include <algorithm>
+#include <cstdio>
+#include <iostream>
+#include <string>
+
 #include <string.h>
+
+#include <unistd.h>
 
 struct globalArgs_t {
   size_t dict_size;
@@ -39,7 +43,7 @@ void display_usage(void) {
 int main (int argc, char* argv[]) {
   Tester tester;
   Codecs::HuffmanCodec huffman;
-  tester.set_codec(&huffman);
+  tester.SetCodec(&huffman);
   //path to file
 
   int opt = 0;
@@ -87,9 +91,9 @@ int main (int argc, char* argv[]) {
   }
 
   if (globalArgs.parse == 1) {
-    tester.readfile_uint(globalArgs.input);
+    tester.ReadFileUint(globalArgs.input);
   } else if (globalArgs.parse == 0) {
-    tester.readfile(globalArgs.input);
+    tester.ReadFile(globalArgs.input);
   } else {
     fprintf(stderr, "invalid argument for parsing");
     exit(EXIT_FAILURE);
@@ -99,20 +103,20 @@ int main (int argc, char* argv[]) {
     globalArgs.dict_size = 200000;
   }
   printf("Maximum dictionary size is %zu\n", globalArgs.dict_size);
-  tester.learn_codec(globalArgs.dict_size);
+  tester.LearnCodec(globalArgs.dict_size);
   
   if (globalArgs.test_time == 0) {
-    tester.test_encode_decode();
-    huffman.reset();
+    tester.TestEncodeDecode();
+    huffman.Reset();
   } else {
-    tester.save_config();
-    tester.test_encode();
-    huffman.reset();
-    tester.test_decode();
-    tester.check_correctness();
-    tester.saved_memory();
-    huffman.reset();
-    tester.reset();
+    tester.SaveConfig();
+    tester.TestEncode();
+    huffman.Reset();
+    tester.TestDecode();
+    tester.CheckCorrectness();
+    tester.SavedMemory();
+    huffman.Reset();
+    tester.Reset();
   }
   return 0;
 }

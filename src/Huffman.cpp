@@ -13,20 +13,17 @@
 #include "Suffix_tree.h"
 #include "Trie.h"
 
-
-// NEEDED LIBRARIES
-#include <inttypes.h>
 #include <algorithm>
+#include <cassert>
 #include <fstream>
+#include <iostream>
 #include <map>
 #include <queue>
-#include <cassert>
 #include <string>
 #include <utility>
 #include <vector>
 
-// DEBUG LIBRARY (REMOVE TODO)
-#include <iostream>
+#include <inttypes.h>
 
 namespace Codecs {
 
@@ -40,7 +37,7 @@ namespace Codecs {
     }
   };
 
-  void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
+  void HuffmanCodec::Encode(string& encoded, const string_view& raw) const {
     // empty strings should remain empty
     if (__builtin_expect(raw.size() == 0, false)) {
       return;
@@ -110,7 +107,7 @@ namespace Codecs {
   }
 
 
-  void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
+  void HuffmanCodec::Decode(string& raw, const string_view& encoded) const {
     if (!encoded.size()) {
       return;
     }
@@ -165,25 +162,24 @@ namespace Codecs {
   }
 
 
-  string HuffmanCodec::save() const {
-    std::ofstream output("config", std::ios_base::binary);
+  void HuffmanCodec::Save(const std::string_view& file_name) const {
+    std::ofstream output(file_name.data(), std::ios_base::binary);
     for (const auto& str : ans) {
-      output << str.first.size() << " " << str.first << " " << str.second << std::endl;
+      output << str.first.size() << " " << str.first << " " << str.second << "\n";
     }
     output.close();
-    return string();
   }
 
-  void HuffmanCodec::Build_table(Node* root_for_table,
+  void HuffmanCodec::BuildTable(Node* root_for_table,
     std::vector<int8_t>& code) {
     if (root_for_table->left) {
       code.push_back(false);
-      Build_table(root_for_table->left, code);
+      BuildTable(root_for_table->left, code);
     }
 
     if (root_for_table->right) {
       code.push_back(true);
-      Build_table(root_for_table->right, code);
+      BuildTable(root_for_table->right, code);
     }
     if (root_for_table->left == root_for_table->right) {
       string s = root_for_table->getData();
@@ -192,7 +188,7 @@ namespace Codecs {
     code.pop_back();
   }
 
-  void HuffmanCodec::load(const string_view& config) {
+  void HuffmanCodec::Load(const string_view& config) {
     ans.clear();
     ans.shrink_to_fit();
 
@@ -201,7 +197,7 @@ namespace Codecs {
       ans.push_back({s, 0});
     }
 
-    std::ifstream input(config.to_string(), std::ios_base::binary);
+    std::ifstream input(config.data(), std::ios_base::binary);
     while (input.good()) {
       size_t len_string;
       string current;
@@ -244,18 +240,19 @@ namespace Codecs {
       ++i;
     }
     root_for_decode = table_cur.top().first;
-    build_jumps(root_for_decode);
+    BuildJumps(root_for_decode);
     std::vector<int8_t> code;
-    Build_table(root_for_decode, code);
+    BuildTable(root_for_decode, code);
     code.clear();
     code.shrink_to_fit();
   }
 
-  size_t HuffmanCodec::sample_size(size_t records_total) const {
+  size_t HuffmanCodec::SampleSize(size_t records_total) const {
     return std::min(static_cast<size_t>(MAX_CONCAT_SIZE), records_total);
   }
 
-  void HuffmanCodec::shrinking(std::vector<std::pair<std::string, int64_t> >& ans_copied, const size_t concat_size) {
+  // TODO bad but very important code
+  void HuffmanCodec::Shrinking(std::vector<std::pair<std::string, int64_t> >& ans_copied, const size_t concat_size) {
     std::map<std::pair<int64_t, std::string>, std::pair<int64_t, bool> > IS_STRING_OK;
     for (auto& str : ans_copied) {
       IS_STRING_OK[{str.first.size(), str.first}] = {str.second, true};
@@ -294,7 +291,7 @@ namespace Codecs {
     }
   }
 
-  void HuffmanCodec::learn(StringViewVector& sample, const size_t dict_size) {
+  void HuffmanCodec::Learn(StringViewVector& sample, const size_t dict_size) {
     std::unordered_map<std::string, std::pair<int64_t, int64_t> > to_check;
     trie = Trie();
     Trie trie_ch = Trie();
@@ -328,7 +325,7 @@ namespace Codecs {
       concat.reserve(MAX_CONCAT_SIZE);
       int64_t cnt_letters = 0;
       for (size_t i = 0; i < sample.size(); ++i) {
-        concat += sample[i].to_string() + std::string(1, min_char);
+        concat += sample[i].data() + std::string(1, min_char);
         cnt_letters += sample[i].size() + 1;
         if (cnt_letters >= static_cast<int64_t>(MAX_CONCAT_SIZE)) {
           concat.resize(MAX_CONCAT_SIZE);
@@ -405,12 +402,12 @@ namespace Codecs {
         ans.push_back({c.second, c.first});
       }
     }
-    shrinking(ans, concat_size);
+    Shrinking(ans, concat_size);
 
 
     // need to use pair because of the non-deterministic Heap;
     std::priority_queue<std::pair<Node*, int64_t>,
-     std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
+    std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
     int64_t i = 0;
     for (const auto& c : ans) {
       Node* p = new Node(c.first, c.second);
@@ -429,12 +426,12 @@ namespace Codecs {
     }
     root_for_decode = table_cur.top().first;
     std::vector<int8_t> code;
-    Build_table(root_for_decode, code);
+    BuildTable(root_for_decode, code);
     code.clear();
     code.shrink_to_fit();
   }
 
-  void HuffmanCodec::build_jumps(Node* node) {
+  void HuffmanCodec::BuildJumps(Node* node) {
     Node* cur;
     for (size_t byte = 0; byte < (1 << CHAR_SIZE); ++byte) {
       cur = node;
@@ -455,12 +452,12 @@ namespace Codecs {
       node->to_go[byte].second = cur;
     }
     if (node->left) {
-      build_jumps(node->left);
-      build_jumps(node->right);
+      BuildJumps(node->left);
+      BuildJumps(node->right);
     }
   }
 
-  void HuffmanCodec::reset() {
+  void HuffmanCodec::Reset() {
     ans.clear();
     ans.shrink_to_fit();
     if (root_for_decode) {

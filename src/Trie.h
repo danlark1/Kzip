@@ -3,9 +3,8 @@
 // SELF-MADE LIBRARIES
 #include "Node.h"
 
-// NEEDED LIBRARIES
-#include <vector>
 #include <string>
+#include <vector>
 
 struct Uzel {
   bool is_terminal;

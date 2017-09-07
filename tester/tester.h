@@ -1,31 +1,31 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <experimental/string_view>
 #include "codec.h"
 
-using StringViewVector = std::vector< std::experimental::string_view >;
+#include <string>
+#include <string_view>
+#include <vector>
 
+using StringViewVector = std::vector<std::string_view>;
 
 class Tester {
 public:
-  void readfile(const std::string&);
-  void readfile_uint(const std::string&);
-  void read_decoded_file(const std::string&);
-  void write_encoded_file(const std::string&);
-  void write_decoded_file(const std::string&);
-  void learn_codec(const size_t dict_size);
-  void set_codec(Codecs::CodecIFace*);
-  void check_correctness();
-  void save_config();
-  void save_info();
-  void saved_memory();
-  void test_encode();
-  void test_decode();
-  void reset();
-  void load();
-  void test_encode_decode();
+  void ReadFile(const std::string&);
+  void ReadFileUint(const std::string&);
+  void ReadDecodedFile(const std::string&);
+  void WriteEncodedFile(const std::string&);
+  void WriteDecodedFile(const std::string&);
+  void LearnCodec(const size_t dict_size);
+  void SetCodec(Codecs::CodecIFace*);
+  void CheckCorrectness();
+  void SaveConfig();
+  void SaveInfo();
+  void SavedMemory();
+  void TestEncode();
+  void TestDecode();
+  void Reset();
+  void Load();
+  void TestEncodeDecode();
 protected:
   Codecs::CodecIFace* codec;
   std::vector<std::string> data;

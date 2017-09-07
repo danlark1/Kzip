@@ -1,11 +1,9 @@
 // SELF-MADE LIBRARIES
 #include "Trie.h"
 
-// NEEDED LIBRARIES
-#include <vector>
-#include <string>
-
 #include <iostream>
+#include <string>
+#include <vector>
 
 Trie::Trie() {
   nodes.push_back(Uzel(0));

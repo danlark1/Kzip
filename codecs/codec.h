@@ -1,15 +1,13 @@
 #pragma once
 
-#include <experimental/algorithm>
-#include <experimental/string_view>
-
 #include <exception>
-#include <string>
-#include <vector>
 #include <sstream>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace Codecs {
-    using std::experimental::string_view;
+    using std::string_view;
     using std::string;
     using std::vector;
     using StringViewVector = vector< string_view >;
@@ -48,15 +46,15 @@ namespace Codecs {
 
     class CodecIFace {
     public:
-        virtual void encode(string& encoded, const string_view& raw) const = 0;
-        virtual void decode(string& raw, const string_view& encoded) const = 0;
-        virtual string save() const = 0;
-        virtual void load(const string_view&) = 0;
+        virtual void Encode(string& encoded, const string_view& raw) const = 0;
+        virtual void Decode(string& raw, const string_view& encoded) const = 0;
+        virtual void Save(const string_view& file_name) const = 0;
+        virtual void Load(const string_view&) = 0;
 
-        virtual size_t sample_size(size_t records_total) const = 0;
-        virtual void learn(StringViewVector& sample, const size_t dict_size) = 0;
+        virtual size_t SampleSize(size_t records_total) const = 0;
+        virtual void Learn(StringViewVector& sample, const size_t dict_size) = 0;
 
-        virtual void reset() = 0;
+        virtual void Reset() = 0;
 
         virtual ~CodecIFace() {}
     };

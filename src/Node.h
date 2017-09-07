@@ -1,9 +1,9 @@
 #pragma once
 
 // NEEDED LIBRARIES
-#include <vector>
-#include <string>
 #include <climits>
+#include <string>
+#include <vector>
 
 enum Node_type { LEAF, BIND };
 const size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
