@@ -17,8 +17,8 @@ public:
   Node(Node* l, Node* r, Node_type = BIND);  // Construct a bind node
   ~Node();
   Node();
-  int64_t getFrequency() const;
-  std::string getData() const;
+  int64_t GetFrequency() const;
+  std::string GetData() const;
 private:
   int64_t frequency;
   std::string data;

@@ -20,10 +20,10 @@ namespace Codecs {
 
   class HuffmanCodec : public CodecIFace {
   public:
-    void Encode(string& encoded, const string_view& raw) const override;
-    void Decode(string& raw, const string_view& encoded) const override;
-    void Save(const string_view&) const override;
-    void Load(const string_view&) override;
+    void Encode(string& encoded, const string_view raw) const override;
+    void Decode(string& raw, const string_view encoded) const override;
+    void Save(const string_view) const override;
+    void Load(const string_view) override;
     size_t SampleSize(size_t records_total) const override;
     void Learn(StringViewVector&, const size_t dict_size) override;
     void Reset() override;

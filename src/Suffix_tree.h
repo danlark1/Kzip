@@ -24,12 +24,12 @@ struct Node_s {
 };
 
 
-class suff_tree {
+class SuffTree {
 
 public:
-  suff_tree(const std::string& str);
+  SuffTree(const std::string& str);
   std::vector<std::pair<std::string, int64_t> > 
-  find_substr(const size_t dict_size, const unsigned char min_char);
+  FindSubstrings(const size_t dict_size, const unsigned char min_char);
 
 private:
   // states of a suffix tree
@@ -45,11 +45,11 @@ private:
   int32_t cur;
   size_t n;
 
-  inline int32_t get_length(const int32_t v) const;
-  Position go(Position pos, int32_t l, int32_t r);
-  int32_t split(const Position pos);
-  int32_t get_link(const int32_t v);
-  Position extend_ukkonen(Position ptr, const int32_t i);
-  void dfs(int32_t v);
+  inline int32_t GetLength(const int32_t v) const;
+  Position Go(Position pos, int32_t l, int32_t r);
+  int32_t Split(const Position pos);
+  int32_t GetLink(const int32_t v);
+  Position ExtendUkkonen(Position ptr, const int32_t i);
+  void Dfs(int32_t v);
 
 };

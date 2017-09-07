@@ -1,6 +1,5 @@
 #pragma once
 
-// SELF-MADE LIBRARIES
 #include "Node.h"
 
 #include <string>
@@ -18,12 +17,12 @@ struct Uzel {
 
 class Trie {
 private:
-  void make_transfer(int32_t i, unsigned char c, bool is_end);
+  void MakeTransfer(int32_t i, unsigned char c, bool is_end);
 public:
   std::vector<Uzel> nodes;
   Trie();
-  void insert(const std::string& s);
-  void insert(const std::string& s, const std::vector<int8_t>& code);
-  bool is_next(int32_t uz, unsigned char c) const;
-  int32_t next(int32_t uz, unsigned char c) const;
+  void Insert(const std::string& s);
+  void Insert(const std::string& s, const std::vector<int8_t>& code);
+  bool IsNext(int32_t uz, unsigned char c) const;
+  int32_t Next(int32_t uz, unsigned char c) const;
 };

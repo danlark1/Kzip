@@ -1,4 +1,3 @@
-// SELF-MADE LIBRARIES
 #include "Trie.h"
 
 #include <iostream>
@@ -9,16 +8,16 @@ Trie::Trie() {
   nodes.push_back(Uzel(0));
 }
 
-void Trie::make_transfer(int32_t i, unsigned char c, bool is_end) {
+void Trie::MakeTransfer(int32_t i, unsigned char c, bool is_end) {
   nodes.push_back(Uzel(is_end));
   nodes[i].next[c] = nodes.size() - 1;
 }
 
-void Trie::insert(const std::string& s) {
+void Trie::Insert(const std::string& s) {
   int32_t i = 0;
   size_t j = 0;
-  while (j < s.size() && is_next(i, static_cast<unsigned char>(s[j]))) {
-    i = next(i, static_cast<unsigned char>(s[j]));
+  while (j < s.size() && IsNext(i, static_cast<unsigned char>(s[j]))) {
+    i = Next(i, static_cast<unsigned char>(s[j]));
     ++j;
   }
   if (j == s.size()) {
@@ -27,7 +26,7 @@ void Trie::insert(const std::string& s) {
   }
 
   while (j < s.size()) {
-    make_transfer(i, static_cast<unsigned char>(s[j]), false);
+    MakeTransfer(i, static_cast<unsigned char>(s[j]), false);
     i = nodes.size() - 1;
     ++j;
   }
@@ -35,11 +34,11 @@ void Trie::insert(const std::string& s) {
   return;
 }
 
-void Trie::insert(const std::string& s, const std::vector<int8_t>& code) {
+void Trie::Insert(const std::string& s, const std::vector<int8_t>& code) {
   int32_t i = 0;
   size_t j = 0;
-  while (j < s.size() && is_next(i, static_cast<unsigned char>(s[j]))) {
-    i = next(i, static_cast<unsigned char>(s[j]));
+  while (j < s.size() && IsNext(i, static_cast<unsigned char>(s[j]))) {
+    i = Next(i, static_cast<unsigned char>(s[j]));
     ++j;
   }
   
@@ -50,7 +49,7 @@ void Trie::insert(const std::string& s, const std::vector<int8_t>& code) {
   }
 
   while (j < s.size()) {
-    make_transfer(i, static_cast<unsigned char>(s[j]), false);
+    MakeTransfer(i, static_cast<unsigned char>(s[j]), false);
     i = nodes.size() - 1;
     ++j;
   }
@@ -58,10 +57,10 @@ void Trie::insert(const std::string& s, const std::vector<int8_t>& code) {
   nodes[i].code = code;
 }
 
-bool Trie::is_next(int32_t uz, unsigned char c) const {
+bool Trie::IsNext(int32_t uz, unsigned char c) const {
   return (nodes[uz].next[c] == -1 ? 0 : 1);
 }
 
-int32_t Trie::next(int32_t uz, unsigned char c) const {
+int32_t Trie::Next(int32_t uz, unsigned char c) const {
   return nodes[uz].next[c];
 }

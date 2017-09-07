@@ -6,6 +6,7 @@
 
 #include "tester.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <ctime>
 #include <fstream>
@@ -17,7 +18,7 @@
 template <typename Iter>
 void SelectSample(StringViewVector& sample, Iter begin, Iter end,
   size_t sample_size) {
-  std::experimental::sample(begin, end, std::back_inserter(sample),
+  std::sample(begin, end, std::back_inserter(sample),
     sample_size, std::mt19937(std::random_device()()));
 }
 

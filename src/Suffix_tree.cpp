@@ -1,4 +1,3 @@
-//SELF-MADE LIBRARIES
 #include "Suffix_tree.h"
 
 #include <algorithm>
@@ -12,7 +11,7 @@
 
 #include <inttypes.h>
 
-suff_tree::suff_tree(const std::string& str) {
+SuffTree::SuffTree(const std::string& str) {
   s = str;
   n = str.size();
 
@@ -25,13 +24,13 @@ suff_tree::suff_tree(const std::string& str) {
   Position pos(0, 0);
   st.push_back(Node_s(0, 0, -1));
   for (size_t i = 0; i < n; ++i) {
-    pos = extend_ukkonen(pos, i);
+    pos = ExtendUkkonen(pos, i);
   }
 }
 
-std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const
+std::vector<std::pair<std::string, int64_t> > SuffTree::FindSubstrings(const
  size_t dict_size, const unsigned char min_char) {
-  dfs(0);
+  Dfs(0);
   std::vector<std::pair<int32_t, int32_t> > p;
   p.resize(st.size() - 1);
   std::generate(p.begin(), p.end(), [&] {
@@ -67,12 +66,12 @@ std::vector<std::pair<std::string, int64_t> > suff_tree::find_substr(const
   return ans;
 }
 // length of an edge
-inline int32_t suff_tree::get_length(const int32_t v) const {
+inline int32_t SuffTree::GetLength(const int32_t v) const {
   return (st[v].right - st[v].left);
 }
 
 // we need to go as much as we can
-Position suff_tree::go(Position pos, int32_t l, int32_t r) {
+Position SuffTree::Go(Position pos, int32_t l, int32_t r) {
   while (true) {
     // if left == right => return
     if (l == r) {
@@ -81,7 +80,7 @@ Position suff_tree::go(Position pos, int32_t l, int32_t r) {
 
     // i made it as it was in the instruction at neerc ifmo
     int32_t stv = pos.vertex;
-    if (pos.len_up == get_length(stv)) {
+    if (pos.len_up == GetLength(stv)) {
       if (st[stv].next.count(s[l]) == 1) {
         pos = Position(st[stv].next[s[l]], 0);
       } else {
@@ -94,17 +93,17 @@ Position suff_tree::go(Position pos, int32_t l, int32_t r) {
       if (s[st[stv].left + pos.len_up] != s[l]) {
         return Position(-1, -1);
       }
-      if (r - l < get_length(stv) - pos.len_up) {
+      if (r - l < GetLength(stv) - pos.len_up) {
         return Position(stv, pos.len_up + r - l);
       }
-      l += get_length(stv) - pos.len_up;
-      pos.len_up = get_length(stv);
+      l += GetLength(stv) - pos.len_up;
+      pos.len_up = GetLength(stv);
     }
   }
 }
 
-int32_t suff_tree::split(const Position pos) {
-  if (pos.len_up == get_length(pos.vertex)) {
+int32_t SuffTree::Split(const Position pos) {
+  if (pos.len_up == GetLength(pos.vertex)) {
     return pos.vertex;
   }
   if (pos.len_up == 0) {
@@ -120,32 +119,32 @@ int32_t suff_tree::split(const Position pos) {
   return cur - 1;
 }
 
-int32_t suff_tree::get_link(const int32_t v) {
+int32_t SuffTree::GetLink(const int32_t v) {
   if (st[v].link != -1) {
     return st[v].link;
   }
   if (st[v].parent == -1) {
     return 0;
   }
-  int32_t to = get_link(st[v].parent);
-  int32_t returned = split(go(Position(to, get_length(to)), st[v].left +
+  int32_t to = GetLink(st[v].parent);
+  int32_t returned = Split(Go(Position(to, GetLength(to)), st[v].left +
     (st[v].parent == 0), st[v].right));
   st[v].link = returned;
   return returned;
 }
 
-Position suff_tree::extend_ukkonen(Position ptr, const int32_t i) {
+Position SuffTree::ExtendUkkonen(Position ptr, const int32_t i) {
   while (true) {
     // almost nullptr, but it is not nullptr in some cases
-    Position nulptr = go(ptr, i, i + 1);
+    Position nulptr = Go(ptr, i, i + 1);
 
     // if we can go, we go
     if (nulptr.vertex != -1) {
       return nulptr;
     }
 
-    // we should split the edge
-    int32_t mid = split(ptr);
+    // we should Split the edge
+    int32_t mid = Split(ptr);
 
     // append leaf
     int32_t leaf = cur;
@@ -156,22 +155,22 @@ Position suff_tree::extend_ukkonen(Position ptr, const int32_t i) {
     st[mid].next[s[i]] = leaf;
 
     // update ptr
-    ptr.vertex = get_link(mid);
-    ptr.len_up = get_length(ptr.vertex);
+    ptr.vertex = GetLink(mid);
+    ptr.len_up = GetLength(ptr.vertex);
 
-    // if we want to split the 0-vert edge, return
+    // if we want to Split the 0-vert edge, return
     if (mid == 0) {
       return ptr;
     }
   }
 }
 
-void suff_tree::dfs(int32_t start) {
-  std::stack<int64_t> STACK;
-  STACK.push(start);
-  while (!STACK.empty()) {
-    int64_t v = STACK.top();
-    STACK.pop();
+void SuffTree::Dfs(int32_t start) {
+  std::stack<int64_t> Stack;
+  Stack.push(start);
+  while (!Stack.empty()) {
+    int64_t v = Stack.top();
+    Stack.pop();
     if (static_cast<size_t>(v) >= (n << 1)) {
       for (auto& it : st[v - (n << 1)].next) {
         num_of_lists[v - (n << 1)] += num_of_lists[it.second];
@@ -179,9 +178,9 @@ void suff_tree::dfs(int32_t start) {
       continue;
     }       
     if (st[v].parent != -1) {
-      sum_str[v] += sum_str[st[v].parent] + get_length(v);
+      sum_str[v] += sum_str[st[v].parent] + GetLength(v);
     } else {
-      sum_str[v] += get_length(v);
+      sum_str[v] += GetLength(v);
     }
     // because of the unread symbol
     if (static_cast<size_t>(st[v].right) == n) {
@@ -192,9 +191,9 @@ void suff_tree::dfs(int32_t start) {
     if (st[v].next.size() == 0) {
       num_of_lists[v] = 1;
     } else {
-      STACK.push((n << 1) + v);
+      Stack.push((n << 1) + v);
       for (auto& it : st[v].next) {
-        STACK.push(it.second);
+        Stack.push(it.second);
       }
     }
   }

@@ -20,6 +20,7 @@
 #include <map>
 #include <queue>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -27,19 +28,19 @@
 
 namespace Codecs {
 
-  class comp {
+  class Comp {
    public:
-    bool operator()(std::pair<Node*, int64_t>& l, std::pair<Node*, int64_t>& r) {
-      if (l.first->getFrequency() == r.first->getFrequency()) {
+    bool operator()(const std::pair<Node*, int64_t>& l, const std::pair<Node*, int64_t>& r) {
+      if (l.first->GetFrequency() == r.first->GetFrequency()) {
         return r.second > l.second;
       }
-      return l.first->getFrequency() > r.first->getFrequency();
+      return l.first->GetFrequency() > r.first->GetFrequency();
     }
   };
 
-  void HuffmanCodec::Encode(string& encoded, const string_view& raw) const {
+  void HuffmanCodec::Encode(string& encoded, const string_view raw) const {
     // empty strings should remain empty
-    if (__builtin_expect(raw.size() == 0, false)) {
+    if (__builtin_expect(!raw.size(), false)) {
       return;
     }
     // reserve 2 bigger than we have for speeding up
@@ -67,12 +68,12 @@ namespace Codecs {
       copy_raw = raw_index;
 
       // one symbol will always be mathched
-      uz = trie.next(uz, raw[raw_index]);
+      uz = trie.Next(uz, raw[raw_index]);
       last_uz = uz;
 
       // finding max mathching string
-      while (raw_index + 1 < raw.size() && trie.is_next(uz, raw[raw_index + 1])) {
-        uz = trie.next(uz, raw[raw_index + 1]);
+      while (raw_index + 1 < raw.size() && trie.IsNext(uz, raw[raw_index + 1])) {
+        uz = trie.Next(uz, raw[raw_index + 1]);
         ++raw_index;
         if (trie.nodes[uz].is_terminal) {
           copy_raw = raw_index;
@@ -107,8 +108,8 @@ namespace Codecs {
   }
 
 
-  void HuffmanCodec::Decode(string& raw, const string_view& encoded) const {
-    if (!encoded.size()) {
+  void HuffmanCodec::Decode(string& raw, const string_view encoded) const {
+    if (__builtin_expect(!encoded.size(), false)) {
       return;
     }
     raw.reserve(encoded.size() << 1);
@@ -125,7 +126,7 @@ namespace Codecs {
           cur = cur->left;
         }
         if (!cur->left) {
-          raw += cur->getData();
+          raw += cur->GetData();
           cur = root_for_decode;
         }
         ++count;
@@ -149,7 +150,7 @@ namespace Codecs {
         cur = cur->left;
       }
       if (!cur->left) {
-        raw += cur->getData();
+        raw += cur->GetData();
         cur = root_for_decode;
       }
       ++count;
@@ -162,7 +163,7 @@ namespace Codecs {
   }
 
 
-  void HuffmanCodec::Save(const std::string_view& file_name) const {
+  void HuffmanCodec::Save(const std::string_view file_name) const {
     std::ofstream output(file_name.data(), std::ios_base::binary);
     for (const auto& str : ans) {
       output << str.first.size() << " " << str.first << " " << str.second << "\n";
@@ -182,13 +183,13 @@ namespace Codecs {
       BuildTable(root_for_table->right, code);
     }
     if (root_for_table->left == root_for_table->right) {
-      string s = root_for_table->getData();
-      trie.insert(s, code);
+      string s = root_for_table->GetData();
+      trie.Insert(s, code);
     }
     code.pop_back();
   }
 
-  void HuffmanCodec::Load(const string_view& config) {
+  void HuffmanCodec::Load(const string_view config) {
     ans.clear();
     ans.shrink_to_fit();
 
@@ -221,7 +222,7 @@ namespace Codecs {
 
 
     std::priority_queue<std::pair<Node*, int64_t>,
-    std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
+    std::vector<std::pair<Node*, int64_t> >, Comp> table_cur;
     int64_t i = 0;
     for (const auto& c : ans) {
       Node* p = new Node(c.first, c.second);
@@ -298,7 +299,7 @@ namespace Codecs {
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
       std::string s(1, c);
       ans.push_back({s, 0});
-      trie_ch.insert(s, {});
+      trie_ch.Insert(s, {});
       to_check[s] = {0, 0};
     }
     std::vector<int64_t> least_char;
@@ -336,11 +337,11 @@ namespace Codecs {
       concat_size = concat.size();
 
       {
-        suff_tree tree(concat);
-        std::vector<std::pair<std::string, int64_t> > ans1 = tree.find_substr(dict_size, min_char);
+        SuffTree tree(concat);
+        std::vector<std::pair<std::string, int64_t> > ans1 = tree.FindSubstrings(dict_size, min_char);
         for (const auto& t : ans1) {
           if (t.first.size() > 1) {
-            trie_ch.insert(t.first);
+            trie_ch.Insert(t.first);
             to_check[t.first] = {0, t.second};
           }
         }
@@ -352,8 +353,8 @@ namespace Codecs {
       string cur;
       for (size_t i = 0; i < concat.size(); ++i) {
         if (static_cast<unsigned char>(concat[i]) != min_char) {
-          if (trie_ch.is_next(uz, concat[i])) {
-            uz = trie_ch.next(uz, concat[i]);
+          if (trie_ch.IsNext(uz, concat[i])) {
+            uz = trie_ch.Next(uz, concat[i]);
             if (trie_ch.nodes[uz].is_terminal) {
               size_uz = cur.size() + 1;
             }
@@ -366,7 +367,7 @@ namespace Codecs {
             ++to_check[cur].first;
             cur.clear();
             cur.push_back(concat[i]);
-            uz = trie_ch.next(0, concat[i]);
+            uz = trie_ch.Next(0, concat[i]);
             size_uz = 1;
           }
         } else {
@@ -407,7 +408,7 @@ namespace Codecs {
 
     // need to use pair because of the non-deterministic Heap;
     std::priority_queue<std::pair<Node*, int64_t>,
-    std::vector<std::pair<Node*, int64_t> >, comp> table_cur;
+    std::vector<std::pair<Node*, int64_t> >, Comp> table_cur;
     int64_t i = 0;
     for (const auto& c : ans) {
       Node* p = new Node(c.first, c.second);
@@ -445,7 +446,7 @@ namespace Codecs {
           cur = cur->left;
         }
         if (!cur->left) {  // is equal to cur->left == nullptr == cur->right
-          node->to_go[byte].first += cur->getData();
+          node->to_go[byte].first += cur->GetData();
           cur = root_for_decode;
         }
       }

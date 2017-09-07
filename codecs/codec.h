@@ -46,10 +46,10 @@ namespace Codecs {
 
     class CodecIFace {
     public:
-        virtual void Encode(string& encoded, const string_view& raw) const = 0;
-        virtual void Decode(string& raw, const string_view& encoded) const = 0;
-        virtual void Save(const string_view& file_name) const = 0;
-        virtual void Load(const string_view&) = 0;
+        virtual void Encode(string& encoded, const string_view raw) const = 0;
+        virtual void Decode(string& raw, const string_view encoded) const = 0;
+        virtual void Save(const string_view file_name) const = 0;
+        virtual void Load(const string_view) = 0;
 
         virtual size_t SampleSize(size_t records_total) const = 0;
         virtual void Learn(StringViewVector& sample, const size_t dict_size) = 0;

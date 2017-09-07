@@ -21,7 +21,7 @@ Node::Node(Node* l, Node* r, Node_type t) { // make a bind
   type = t;
   data.clear();
   data.shrink_to_fit();
-  frequency = l->getFrequency() + r->getFrequency();
+  frequency = l->GetFrequency() + r->GetFrequency();
   left = l;
   right = r;
   to_go.resize(1 << CHAR_SIZE);
@@ -35,10 +35,10 @@ Node::~Node() {
   }
 }
 
-int64_t Node::getFrequency() const { // frequency of a node
+int64_t Node::GetFrequency() const { // frequency of a node
   return frequency;
 }
 
-std::string Node::getData() const {
+std::string Node::GetData() const {
   return data;
 }
