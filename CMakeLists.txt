@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(tester)
 
+
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -std=c++1z")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -flto")
 
@@ -8,6 +10,7 @@ include_directories("tester/" "src/" "codecs/")
 
 set(SOURCES
     main.cpp
+    src/Dict.cpp
     src/Huffman.cpp
     src/Node.cpp
     src/Trie.cpp
@@ -20,6 +23,7 @@ set(HEADERS
     src/Node.h
     src/Trie.h
     src/Suffix_tree.h
-    tester/tester.h)
+    tester/tester.h
+    src/Util.h)
 
 add_executable(kzip ${SOURCES})

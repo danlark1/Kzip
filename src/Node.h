@@ -1,6 +1,5 @@
 #pragma once
 
-// NEEDED LIBRARIES
 #include <climits>
 #include <string>
 #include <vector>

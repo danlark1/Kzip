@@ -1,3 +1,4 @@
+
 #include "Suffix_tree.h"
 
 #include <algorithm>

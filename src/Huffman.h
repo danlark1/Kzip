@@ -1,21 +1,20 @@
 #pragma once
 
-// SELF-MADE
 #include "../codecs/codec.h"
 #include "Node.h"
 #include "Suffix_tree.h"
 #include "Trie.h"
 
+#include <cmath>
 #include <climits>
 #include <string>
 #include <vector>
 
-#include <math.h>
 
 namespace Codecs {
-
   constexpr size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
-  constexpr size_t LOG_CHAR_SIZE = ceil(log(CHAR_SIZE));
+  // ceil and log are not constexpr
+  const size_t LOG_CHAR_SIZE = std::ceil(std::log2(CHAR_SIZE));
   constexpr size_t MAX_CONCAT_SIZE = 1e6;
 
   class HuffmanCodec : public CodecIFace {

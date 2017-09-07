@@ -1,4 +1,3 @@
-// SELF-MADE
 #include "Node.h"
 
 #include <algorithm>
