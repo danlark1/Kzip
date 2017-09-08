@@ -1,3 +1,5 @@
+// Copyright 2017, Danila Kutenin
+
 #include "Huffman.h"
 #include "Node.h"
 #include "Suffix_tree.h"
@@ -13,8 +15,8 @@
 #include <random>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace Codecs {
@@ -123,9 +125,10 @@ namespace Codecs {
         // if string occurs at least once than add to dictionary
         if ((str.second.first > 0 && str.first.size() >= 2)) {
           ans2.push_back({str.second.first, str.first});
+        } else if (str.first.size() == 1) {        
+          ans[static_cast<unsigned char>(str.first[0])].second =
+          std::max(str.second.first, ans[static_cast<unsigned char>(str.first[0])].second);
         }
-        ans[static_cast<unsigned char>(str.first[0])].second =
-        std::max(str.second.first, ans[static_cast<unsigned char>(str.first[0])].second);
       }
       sort(ans2.rbegin(), ans2.rend());
       for (const auto& c: ans2) {
@@ -190,7 +193,7 @@ namespace Codecs {
     }
     ans_copied.resize(1 << CHAR_SIZE);
     std::vector<std::pair<int64_t, std::string> > ans_copy;
-    for (auto& str : CheckingStrMap) {
+    for (const auto& str : CheckingStrMap) {
       auto FirstStr = str.first;
       auto SecondStr = str.second;
       if (SecondStr.taken && FirstStr.size >= 2) {
@@ -198,7 +201,7 @@ namespace Codecs {
       }
     }
     sort(ans_copy.rbegin(), ans_copy.rend());
-    for (auto& str : ans_copy) {
+    for (const auto& str : ans_copy) {
       ans_copied.push_back({str.second, str.first});
     }
   }

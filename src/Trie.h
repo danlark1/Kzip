@@ -1,3 +1,4 @@
+// Copyright 2017, Danila Kutenin
 #pragma once
 
 #include "Node.h"

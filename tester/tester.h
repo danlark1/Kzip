@@ -1,5 +1,5 @@
+// Copyright 2017, Danila Kutenin
 #pragma once
-
 #include "codec.h"
 
 #include <string>

@@ -1,3 +1,4 @@
+// Copyright 2017, Danila Kutenin
 #pragma once
 
 #include "../codecs/codec.h"
@@ -5,11 +6,10 @@
 #include "Suffix_tree.h"
 #include "Trie.h"
 
-#include <cmath>
 #include <climits>
+#include <cmath>
 #include <string>
 #include <vector>
-
 
 namespace Codecs {
   constexpr size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);

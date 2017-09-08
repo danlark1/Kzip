@@ -1,8 +1,4 @@
-/*
-  This is a simple tester, it shows the example how to use codec, pls, be sure
-  that you understand everything here.
-*/
-
+// Copyright 2017, Danila Kutenin
 
 #include "tester.h"
 

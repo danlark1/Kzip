@@ -1,3 +1,5 @@
+// Copyright 2017, Danila Kutenin
+
 #include "Node.h"
 
 #include <algorithm>

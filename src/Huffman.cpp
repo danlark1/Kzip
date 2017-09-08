@@ -1,3 +1,5 @@
+// Copyright 2017, Danila Kutenin
+
 #include "Huffman.h"
 #include "Node.h"
 #include "Suffix_tree.h"
@@ -7,14 +9,15 @@
 #include <algorithm>
 #include <cinttypes>
 #include <fstream>
+#include <ios>
 #include <iostream>
 #include <map>
 #include <queue>
 #include <random>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace Codecs {
@@ -147,7 +150,7 @@ namespace Codecs {
   void HuffmanCodec::Save(const std::string_view file_name) const {
     std::ofstream output(file_name.data(), std::ios_base::binary);
     for (const auto& str : ans) {
-      output << str.first.size() << " " << str.first << " " << str.second << "\n";
+      output << std::hex << str.first.size() << " " << str.first << " " << std::hex << str.second << "\n";
     }
     output.close();
   }
@@ -183,7 +186,7 @@ namespace Codecs {
     while (input.good()) {
       size_t len_string;
       string current;
-      input >> len_string;
+      input >> std::hex >> len_string;
       input.get();
       if (!input.good()) {
         break;
@@ -192,7 +195,7 @@ namespace Codecs {
         current += input.get();
       }
       size_t frequency;
-      input >> frequency;
+      input >> std::hex >> frequency;
       if (len_string == 1) {
         ans[static_cast<unsigned char>(current[0])].second = frequency;
       } else {

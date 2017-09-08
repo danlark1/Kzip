@@ -1,3 +1,4 @@
+// Copyright 2017, Danila Kutenin
 #include "Trie.h"
 
 #include <iostream>
