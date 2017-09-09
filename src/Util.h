@@ -9,12 +9,12 @@
 
 class Comp {
   public:
-    bool operator()(const std::pair<Node*, int64_t>& l, const std::pair<Node*, int64_t>& r) {
-      if (l.first->GetFrequency() == r.first->GetFrequency()) {
-        return r.second > l.second;
-      }
-      return l.first->GetFrequency() > r.first->GetFrequency();
+  bool operator()(const std::pair<Node*, int64_t>& l, const std::pair<Node*, int64_t>& r) {
+    if (l.first->GetFrequency() == r.first->GetFrequency()) {
+      return r.second > l.second;
     }
+    return l.first->GetFrequency() > r.first->GetFrequency();
+  }
 };
 
 struct KeyStr {
@@ -32,4 +32,3 @@ struct ValueStr {
   int64_t occur;
   bool taken;
 };
-

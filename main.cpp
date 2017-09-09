@@ -15,21 +15,16 @@
 
 struct globalArgs_t {
   size_t dict_size;
-  bool   parse;
-  char*  input;
-  bool   test_time;
+  bool parse;
+  char* input;
+  bool test_time;
 } globalArgs;
 
 static const char* optString = "d:p:f:t:h?";
 
 static const struct option longOpts[] = {
-  { "dict_size", required_argument, 0, 'd' },
-  { "parsing", required_argument, 0, 'p' },
-  { "help", no_argument, NULL, 'h' },
-  { "file", required_argument, NULL, 'f' },
-  { "time", required_argument, NULL, 't' },
-  { NULL, no_argument, NULL, 0 }
-};
+    {"dict_size", required_argument, 0, 'd'}, {"parsing", required_argument, 0, 'p'}, {"help", no_argument, NULL, 'h'},
+    {"file", required_argument, NULL, 'f'},   {"time", required_argument, NULL, 't'}, {NULL, no_argument, NULL, 0}};
 
 void display_usage(void) {
   puts("Kzip is here");
@@ -41,53 +36,54 @@ void display_usage(void) {
   exit(EXIT_FAILURE);
 }
 
-int main (int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   Tester tester;
   Codecs::HuffmanCodec huffman;
   tester.SetCodec(&huffman);
-  //path to file
+  // path to file
 
   int opt = 0;
   int longIndex;
   int count_files = 0;
-  globalArgs.dict_size = 12400; // standart dict_size
+  globalArgs.dict_size = 12400;  // standart dict_size
   globalArgs.parse = 0;
   globalArgs.test_time = 0;
   globalArgs.input = NULL;
 
   while ((opt = getopt_long(argc, argv, optString, longOpts, &longIndex)) != -1) {
     switch (opt) {
-      case 'h': {
-        display_usage();
-        break;
-      };
-      case 'd': {
-        globalArgs.dict_size = std::atoi(optarg);
-        break;
-      };
-      case 'p': {
-        globalArgs.parse = std::atoi(optarg);
-        break;
-      };
-      case 'f': {
-        globalArgs.input = optarg;
-        ++count_files;
-        break;
-      };
-      case 't': {
-        globalArgs.test_time = std::atoi(optarg);
-        break;
-      }
-      case '?': default: {
-        fprintf(stderr, "found unknown option, try --help or -h for help");
-        exit(EXIT_FAILURE);
-        break;
-      };
+    case 'h': {
+      display_usage();
+      break;
+    };
+    case 'd': {
+      globalArgs.dict_size = std::atoi(optarg);
+      break;
+    };
+    case 'p': {
+      globalArgs.parse = std::atoi(optarg);
+      break;
+    };
+    case 'f': {
+      globalArgs.input = optarg;
+      ++count_files;
+      break;
+    };
+    case 't': {
+      globalArgs.test_time = std::atoi(optarg);
+      break;
+    }
+    case '?':
+    default: {
+      fprintf(stderr, "found unknown option, try --help or -h for help\n");
+      exit(EXIT_FAILURE);
+      break;
+    };
     }
   }
 
   if (count_files == 0 || count_files >= 2) {
-    fprintf(stderr, "no file to decode or too many files");
+    fprintf(stderr, "no file to decode or too many files\n");
     exit(EXIT_FAILURE);
   }
 
@@ -96,7 +92,7 @@ int main (int argc, char* argv[]) {
   } else if (globalArgs.parse == 0) {
     tester.ReadFile(globalArgs.input);
   } else {
-    fprintf(stderr, "invalid argument for parsing");
+    fprintf(stderr, "invalid argument for parsing\n");
     exit(EXIT_FAILURE);
   }
 
@@ -105,7 +101,7 @@ int main (int argc, char* argv[]) {
   }
   printf("Maximum dictionary size is %zu\n", globalArgs.dict_size);
   tester.LearnCodec(globalArgs.dict_size);
-  
+
   if (globalArgs.test_time == 0) {
     tester.TestEncodeDecode();
     huffman.Reset();

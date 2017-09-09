@@ -6,9 +6,14 @@
 #include <string>
 #include <vector>
 
-Node::Node() : left(nullptr), right(nullptr), frequency(0), data("") {}
+Node::Node()
+    : left(nullptr)
+    , right(nullptr)
+    , frequency(0)
+    , data("") {
+}
 
-Node::Node(const std::string& Data, const int64_t freq, const Node_type t) { // make a leaf
+Node::Node(const std::string& Data, const int64_t freq, const Node_type t) {  // make a leaf
   type = t;
   data = std::move(Data);
   frequency = freq;
@@ -18,7 +23,7 @@ Node::Node(const std::string& Data, const int64_t freq, const Node_type t) { // 
   std::fill(to_go.begin(), to_go.end(), std::make_pair("", nullptr));
 }
 
-Node::Node(Node* l, Node* r, Node_type t) { // make a bind
+Node::Node(Node* l, Node* r, Node_type t) {  // make a bind
   type = t;
   data.clear();
   data.shrink_to_fit();
@@ -30,15 +35,13 @@ Node::Node(Node* l, Node* r, Node_type t) { // make a bind
 }
 
 Node::~Node() {
-  if (left) {
+  if (left)
     delete left;
-  }
-  if (right) {
+  if (right)
     delete right;
-  }
 }
 
-int64_t Node::GetFrequency() const { // frequency of a node
+int64_t Node::GetFrequency() const {  // frequency of a node
   return frequency;
 }
 

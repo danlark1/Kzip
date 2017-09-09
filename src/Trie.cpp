@@ -42,7 +42,7 @@ void Trie::Insert(const std::string& s, const std::vector<int8_t>& code) {
     i = Next(i, static_cast<unsigned char>(s[j]));
     ++j;
   }
-  
+
   if (j == s.size()) {
     nodes[i].is_terminal = true;
     nodes[i].code = code;

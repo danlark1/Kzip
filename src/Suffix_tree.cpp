@@ -29,10 +29,10 @@ SuffTree::SuffTree(const std::string& str) {
   }
 }
 
-std::vector<std::pair<std::string, int64_t> > SuffTree::FindSubstrings(const
- size_t dict_size, const unsigned char min_char) {
+std::vector<std::pair<std::string, int64_t>> SuffTree::FindSubstrings(const size_t dict_size,
+                                                                      const unsigned char min_char) {
   Dfs(0);
-  std::vector<std::pair<int32_t, int32_t> > p;
+  std::vector<std::pair<int32_t, int32_t>> p;
   p.resize(st.size() - 1);
   std::generate(p.begin(), p.end(), [&] {
     static auto i_temp = 0;
@@ -44,11 +44,10 @@ std::vector<std::pair<std::string, int64_t> > SuffTree::FindSubstrings(const
   int32_t i = p.size() - 1;
   size_t j = 0;
   bool flag = false;
-  std::vector<std::pair<std::string, int64_t> > ans;
+  std::vector<std::pair<std::string, int64_t>> ans;
   while (j <= dict_size && i >= 0 && k <= 10000000) {
     flag = false;
-    for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; 
-      pop < st[p[i].second].right; ++pop) {
+    for (int32_t pop = st[p[i].second].right - sum_str[p[i].second]; pop < st[p[i].second].right; ++pop) {
       if (s[pop] == min_char) {
         flag = true;
         break;
@@ -60,8 +59,8 @@ std::vector<std::pair<std::string, int64_t> > SuffTree::FindSubstrings(const
     }
     ++j;
     k += sum_str[p[i].second];
-    ans.push_back({s.substr(st[p[i].second].right - sum_str[p[i].second],
-      sum_str[p[i].second]), num_of_lists[p[i].second]});
+    ans.push_back(
+        {s.substr(st[p[i].second].right - sum_str[p[i].second], sum_str[p[i].second]), num_of_lists[p[i].second]});
     --i;
   }
   return ans;
@@ -128,8 +127,7 @@ int32_t SuffTree::GetLink(const int32_t v) {
     return 0;
   }
   int32_t to = GetLink(st[v].parent);
-  int32_t returned = Split(Go(Position(to, GetLength(to)), st[v].left +
-    (st[v].parent == 0), st[v].right));
+  int32_t returned = Split(Go(Position(to, GetLength(to)), st[v].left + (st[v].parent == 0), st[v].right));
   st[v].link = returned;
   return returned;
 }
@@ -175,9 +173,9 @@ void SuffTree::Dfs(int32_t start) {
     if (static_cast<size_t>(v) >= (n << 1)) {
       for (auto& it : st[v - (n << 1)].next) {
         num_of_lists[v - (n << 1)] += num_of_lists[it.second];
-      } 
+      }
       continue;
-    }       
+    }
     if (st[v].parent != -1) {
       sum_str[v] += sum_str[st[v].parent] + GetLength(v);
     } else {
@@ -199,5 +197,3 @@ void SuffTree::Dfs(int32_t start) {
     }
   }
 }
-
-

@@ -11,17 +11,13 @@
 #include <string>
 #include <vector>
 
-template <typename Iter>
-void SelectSample(StringViewVector& sample, Iter begin, Iter end,
-  size_t sample_size) {
-  std::sample(begin, end, std::back_inserter(sample),
-    sample_size, std::mt19937(std::random_device()()));
+template <typename Iter> void SelectSample(StringViewVector& sample, Iter begin, Iter end, size_t sample_size) {
+  std::sample(begin, end, std::back_inserter(sample), sample_size, std::mt19937(std::random_device()()));
 }
 
 void Tester::LearnCodec(const size_t dict_size) {
   StringViewVector sample;
-  SelectSample(sample, this->data.begin(), this->data.end(),
-    this->codec->SampleSize(this->data.size()));
+  SelectSample(sample, this->data.begin(), this->data.end(), this->codec->SampleSize(this->data.size()));
   double start = clock();
   if (dict_size == 0) {
     this->codec->Learn(sample, 12400);
@@ -100,7 +96,6 @@ void Tester::WriteDecodedFile(const std::string& where_to) {
   output.close();
 }
 
-
 void Tester::ReadDecodedFile(const std::string& from) {
   std::ifstream input(from, std::ios_base::binary);
   std::ifstream conf("Dictionary");
@@ -128,7 +123,6 @@ void Tester::ReadDecodedFile(const std::string& from) {
 void Tester::SaveConfig() {
   this->codec->Save("Dictionary");
 }
-
 
 void Tester::SetCodec(Codecs::CodecIFace* codec) {
   this->codec = codec;
@@ -160,7 +154,7 @@ void Tester::TestEncodeDecode() {
   double start;
   double finish;
   size_t error_count = 0;
-  
+
   std::ofstream errors("errors", std::ios_base::binary);
   for (auto& cur_string : this->data) {
 

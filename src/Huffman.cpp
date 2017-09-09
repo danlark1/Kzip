@@ -24,9 +24,8 @@ namespace Codecs {
 
   void HuffmanCodec::Encode(string& encoded, const string_view raw) const {
     // empty strings should remain empty
-    if (__builtin_expect(!raw.size(), false)) {
+    if (__builtin_expect(!raw.size(), false))
       return;
-    }
     encoded.reserve(raw.size() << 1);
     unsigned char buf = 0;
     int8_t count = CHAR_SIZE - LOG_CHAR_SIZE;
@@ -35,7 +34,6 @@ namespace Codecs {
     size_t uz = 0;
     size_t copy_raw = 0;
     size_t last_uz = 0;
-
 
     while (raw_index < raw.size()) {
       code_index = 0;
@@ -71,32 +69,27 @@ namespace Codecs {
       ++raw_index;
     }
     // this happens with probability 7/8
-    if (__builtin_expect(count != CHAR_SIZE, true)) {
+    if (__builtin_expect(count != CHAR_SIZE, true))
       encoded.push_back(buf << count);
-    }
     // first "three" bits for last char
-    encoded[0] |= (static_cast<unsigned char>(CHAR_SIZE - count)) <<
-      (CHAR_SIZE - LOG_CHAR_SIZE);
+    encoded[0] |= (static_cast<unsigned char>(CHAR_SIZE - count)) << (CHAR_SIZE - LOG_CHAR_SIZE);
   }
 
-
   void HuffmanCodec::Decode(string& raw, const string_view encoded) const {
-    if (__builtin_expect(!encoded.size(), false)) {
+    if (__builtin_expect(!encoded.size(), false))
       return;
-    }
     raw.reserve(encoded.size() << 1);
     int8_t count = LOG_CHAR_SIZE;
     Node* cur = root_for_decode;
     unsigned char byte = encoded[0];
     int64_t encoded_size = static_cast<int64_t>(encoded.size()) - 1;
-    
+
     if (encoded_size >= 1) {
       while (count != CHAR_SIZE) {
-        if (byte & (1 << (CHAR_SIZE - count - 1))) {
+        if (byte & (1 << (CHAR_SIZE - count - 1)))
           cur = cur->right;
-        } else {
+        else
           cur = cur->left;
-        }
         if (!cur->left) {
           raw += cur->GetData();
           cur = root_for_decode;
@@ -116,35 +109,28 @@ namespace Codecs {
 
     // last element
     while (true) {
-      if (byte & (1 << (CHAR_SIZE - count - 1))) {
+      if (byte & (1 << (CHAR_SIZE - count - 1)))
         cur = cur->right;
-      } else {
+      else
         cur = cur->left;
-      }
       if (!cur->left) {
         raw += cur->GetData();
         cur = root_for_decode;
       }
       ++count;
-      if (count == CHAR_SIZE ||
-        (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) 
-          == count) {
+      if (count == CHAR_SIZE || (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) == count)
         break;
-      }
     }
   }
-
 
   void HuffmanCodec::Save(const std::string_view file_name) const {
     std::ofstream output(file_name.data(), std::ios_base::binary);
-    for (const auto& str : ans) {
+    for (const auto& str : ans)
       output << std::hex << str.first.size() << " " << str.first << " " << std::hex << str.second << "\n";
-    }
     output.close();
   }
 
-  void HuffmanCodec::BuildTable(Node* root_for_table,
-    std::vector<int8_t>& code) {
+  void HuffmanCodec::BuildTable(Node* root_for_table, std::vector<int8_t>& code) {
     if (root_for_table->left) {
       code.push_back(false);
       BuildTable(root_for_table->left, code);
@@ -164,7 +150,8 @@ namespace Codecs {
   void HuffmanCodec::Load(const string_view config) {
     ans.clear();
     ans.shrink_to_fit();
-
+    trie.nodes.clear();
+    trie = Trie();
     for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
       std::string s(1, c);
       ans.push_back({s, 0});
@@ -176,27 +163,23 @@ namespace Codecs {
       string current;
       input >> std::hex >> len_string;
       input.get();
-      if (!input.good()) {
+      if (!input.good())
         break;
-      }
-      for (size_t i = 0; i < len_string; ++i) {
+      for (size_t i = 0; i < len_string; ++i)
         current += input.get();
-      }
       size_t frequency;
       input >> std::hex >> frequency;
-      if (len_string == 1) {
+      if (len_string == 1)
         ans[static_cast<unsigned char>(current[0])].second = frequency;
-      } else {
+      else
         ans.push_back({current, frequency});
-      }
     }
     input.close();
     BuildTree();
   }
 
   void HuffmanCodec::BuildTree() {
-    std::priority_queue<std::pair<Node*, int64_t>,
-      std::vector<std::pair<Node*, int64_t> >, Comp> table_cur;
+    std::priority_queue<std::pair<Node*, int64_t>, std::vector<std::pair<Node*, int64_t>>, Comp> table_cur;
     int64_t i = 0;
     for (const auto& c : ans) {
       Node* p = new Node(c.first, c.second);
@@ -227,15 +210,13 @@ namespace Codecs {
     Node* cur;
     for (size_t byte = 0; byte < (1 << CHAR_SIZE); ++byte) {
       cur = node;
-      if (!cur->right || !cur->left) {
+      if (!cur->right || !cur->left)
         continue;
-      }
       for (size_t j = 0; j < CHAR_SIZE; ++j) {
-        if (byte & (1 << (CHAR_SIZE - j - 1))) {
+        if (byte & (1 << (CHAR_SIZE - j - 1)))
           cur = cur->right;
-        } else {
+        else
           cur = cur->left;
-        }
         if (!cur->left) {  // is equal to cur->left == nullptr == cur->right
           node->to_go[byte].first += cur->GetData();
           cur = root_for_decode;
@@ -252,8 +233,8 @@ namespace Codecs {
   void HuffmanCodec::Reset() {
     ans.clear();
     ans.shrink_to_fit();
-    if (root_for_decode) {
+    if (root_for_decode)
       delete root_for_decode;
-    }
   }
+
 }  // namespace Codecs

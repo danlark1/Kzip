@@ -9,7 +9,7 @@
 using StringViewVector = std::vector<std::string_view>;
 
 class Tester {
-public:
+  public:
   void ReadFile(const std::string&);
   void ReadFileUint(const std::string&);
   void ReadDecodedFile(const std::string&);
@@ -26,7 +26,8 @@ public:
   void Reset();
   void Load();
   void TestEncodeDecode();
-protected:
+
+  private:
   Codecs::CodecIFace* codec;
   std::vector<std::string> data;
   std::vector<std::string> decoded_data;
