@@ -136,35 +136,9 @@ namespace Codecs {
       }
     }
     Shrinking(ans, concat_size);
-
-
-    // need to use pair because of the non-deterministic Heap;
-    std::priority_queue<std::pair<Node*, int64_t>,
-    std::vector<std::pair<Node*, int64_t> >, Comp> table_cur;
-    int64_t i = 0;
-    for (const auto& c : ans) {
-      Node* p = new Node(c.first, c.second);
-      table_cur.push({p, i});
-      ++i;
-    }
-
-    while (table_cur.size() != 1) {
-      Node* left_son = table_cur.top().first;
-      table_cur.pop();
-      Node* right_son = table_cur.top().first;
-      table_cur.pop();
-      Node* parent = new Node(left_son, right_son);
-      table_cur.push({parent, i});
-      ++i;
-    }
-    root_for_decode = table_cur.top().first;
-    std::vector<int8_t> code;
-    BuildTable(root_for_decode, code);
-    code.clear();
-    code.shrink_to_fit();
+    BuildTree();
   }
 
-  // TODO bad but very important code
   void HuffmanCodec::Shrinking(std::vector<std::pair<std::string, int64_t> >& ans_copied, const size_t concat_size) {
     std::map<KeyStr, ValueStr> CheckingStrMap;
     for (auto& str : ans_copied) {

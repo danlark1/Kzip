@@ -34,6 +34,10 @@ void Tester::LearnCodec(const size_t dict_size) {
 
 void Tester::ReadFile(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
+  if (!input.is_open()) {
+    printf("Cannot open the file %s\n", data_in_file.c_str());
+    exit(EXIT_FAILURE);
+  }
   std::string cur_string;
   while (input.good()) {
     getline(input, cur_string);
@@ -47,6 +51,10 @@ void Tester::ReadFile(const std::string& data_in_file) {
 
 void Tester::ReadFileUint(const std::string& data_in_file) {
   std::ifstream input(data_in_file, std::ios_base::binary);
+  if (!input.is_open()) {
+    printf("Cannot open the file %s\n", data_in_file.c_str());
+    exit(EXIT_FAILURE);
+  }
   while (input.good()) {
     std::string cur_string;
     std::string bin;
@@ -95,7 +103,7 @@ void Tester::WriteDecodedFile(const std::string& where_to) {
 
 void Tester::ReadDecodedFile(const std::string& from) {
   std::ifstream input(from, std::ios_base::binary);
-  std::ifstream conf("config1");
+  std::ifstream conf("Dictionary");
   encoded_data.clear();
   uint64_t n;
   conf >> n;
@@ -118,7 +126,7 @@ void Tester::ReadDecodedFile(const std::string& from) {
 }
 
 void Tester::SaveConfig() {
-  this->codec->Save("config");
+  this->codec->Save("Dictionary");
 }
 
 
@@ -141,9 +149,9 @@ void Tester::TestEncode() {
 
 void Tester::TestEncodeDecode() {
   size_t i = 0;
-  this->codec->Save("config");
+  this->codec->Save("Dictionary");
   this->codec->Reset();
-  this->codec->Load("config");
+  this->codec->Load("Dictionary");
   size_t mem1 = 0;
   size_t mem2 = 0;
 
@@ -187,13 +195,13 @@ void Tester::TestEncodeDecode() {
   printf("decode ended in %f\n", (time_dec) / CLOCKS_PER_SEC);
   printf("Memory saved (MBs): %f\n", 1.0 * ((long long)mem2 - (long long)mem1) / 1024 / 1024);
   // max dict size is 1mb on average
-  std::ifstream file("config", std::ios::binary | std::ios::ate);
+  std::ifstream file("Dictionary", std::ios::binary | std::ios::ate);
   printf("Memory saved (percent): %f%%\n", 100 - 100.0 * (mem1 + file.tellg()) / mem2);
   printf("%zu errors were occured\n", error_count);
 }
 
 void Tester::TestDecode() {
-  this->codec->Load("config");
+  this->codec->Load("Dictionary");
   double start = 1.0 * clock();
   for (auto& cur_string : this->encoded_data) {
     std::string out;
@@ -205,11 +213,11 @@ void Tester::TestDecode() {
 }
 
 void Tester::Load() {
-  this->codec->Load("config");
+  this->codec->Load("Dictionary");
 }
 
 void Tester::SaveInfo() {
-  std::ofstream out("config1");
+  std::ofstream out("Dictionary1");
   out << encoded_data.size() << '\n';
   for (auto& cur_string : encoded_data) {
     out << cur_string.size() << '\n';
@@ -260,7 +268,7 @@ void Tester::SavedMemory() {
     ++encoded_it;
   }
   printf("Memory saved (MBs): %f\n", 1.0 * saved / 1024 / 1024);
-  std::ifstream file("config", std::ios::binary | std::ios::ate);
+  std::ifstream file("Dictionary", std::ios::binary | std::ios::ate);
   printf("Memory saved (percent): %f%%\n", 100 - 100.0 * (mem1 + file.tellg()) / mem2);
 }
 

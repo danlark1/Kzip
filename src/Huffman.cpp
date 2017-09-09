@@ -27,35 +27,24 @@ namespace Codecs {
     if (__builtin_expect(!raw.size(), false)) {
       return;
     }
-    // reserve 2 bigger than we have for speeding up
     encoded.reserve(raw.size() << 1);
-    // buffer char for adding to encoded string
     unsigned char buf = 0;
-    // count for how many bits we can afford for
     int8_t count = CHAR_SIZE - LOG_CHAR_SIZE;
-    // which bit we can add
     size_t code_index = 0;
-    // which char we are looking at
     size_t raw_index = 0;
-    // uzel for cur vertex in trie
     size_t uz = 0;
-    // copy raw for size of encoded string
     size_t copy_raw = 0;
-    // last uzel
     size_t last_uz = 0;
 
 
     while (raw_index < raw.size()) {
-      // init
       code_index = 0;
       uz = 0;
       copy_raw = raw_index;
 
-      // one symbol will always be mathched
       uz = trie.Next(uz, raw[raw_index]);
       last_uz = uz;
 
-      // finding max mathching string
       while (raw_index + 1 < raw.size() && trie.IsNext(uz, raw[raw_index + 1])) {
         uz = trie.Next(uz, raw[raw_index + 1]);
         ++raw_index;
@@ -66,7 +55,6 @@ namespace Codecs {
       }
       raw_index = copy_raw;
       size_t size_of_path = trie.nodes[last_uz].code.size();
-      // add the code to the buffer
       while (code_index < size_of_path) {
         while (code_index < size_of_path && count) {
           buf <<= 1;
@@ -82,7 +70,7 @@ namespace Codecs {
       }
       ++raw_index;
     }
-    // this happens with probability 3/8
+    // this happens with probability 7/8
     if (__builtin_expect(count != CHAR_SIZE, true)) {
       encoded.push_back(buf << count);
     }
@@ -203,8 +191,10 @@ namespace Codecs {
       }
     }
     input.close();
+    BuildTree();
+  }
 
-
+  void HuffmanCodec::BuildTree() {
     std::priority_queue<std::pair<Node*, int64_t>,
       std::vector<std::pair<Node*, int64_t> >, Comp> table_cur;
     int64_t i = 0;
@@ -213,7 +203,6 @@ namespace Codecs {
       table_cur.push({p, i});
       ++i;
     }
-
     Node* parent;
     while (table_cur.size() != 1) {
       Node* left_son = table_cur.top().first;
@@ -228,8 +217,6 @@ namespace Codecs {
     BuildJumps(root_for_decode);
     std::vector<int8_t> code;
     BuildTable(root_for_decode, code);
-    code.clear();
-    code.shrink_to_fit();
   }
 
   size_t HuffmanCodec::SampleSize(size_t records_total) const {

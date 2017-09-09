@@ -13,8 +13,10 @@ public:
   Node* left;
   Node* right;
   std::vector<std::pair<std::string, Node*> > to_go;
-  Node(const std::string& d, const int64_t s, const Node_type = LEAF);  // Construct a list
-  Node(Node* l, Node* r, Node_type = BIND);  // Construct a bind node
+  Node(const std::string&, const int64_t, const Node_type = LEAF);
+  Node(Node*, Node*, Node_type = BIND);
+  Node(const Node&) = default;
+  Node(Node&&) = default;
   ~Node();
   Node();
   int64_t GetFrequency() const;

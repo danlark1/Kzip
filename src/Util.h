@@ -21,10 +21,10 @@ struct KeyStr {
   size_t size;
   std::string str;
   bool operator==(const KeyStr& other) const {
-    return size == other.size && str == other.str;
+    return std::tie(size, str) == std::tie(other.size, other.str);
   }
   bool operator<(const KeyStr& other) const {
-    return size < other.size || (size == other.size && str < other.str);
+    return std::tie(size, str) < std::tie(other.size, other.str);
   }
 };
 

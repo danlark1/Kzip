@@ -8,10 +8,10 @@
 
 Node::Node() : left(nullptr), right(nullptr), frequency(0), data("") {}
 
-Node::Node(const std::string& d, const int64_t s, const Node_type t) { // make a leaf
+Node::Node(const std::string& Data, const int64_t freq, const Node_type t) { // make a leaf
   type = t;
-  data = std::move(d);
-  frequency = s;
+  data = std::move(Data);
+  frequency = freq;
   left = nullptr;
   right = nullptr;
   to_go.resize(1 << CHAR_SIZE);
@@ -30,8 +30,10 @@ Node::Node(Node* l, Node* r, Node_type t) { // make a bind
 }
 
 Node::~Node() {
-  if (this->left) {
+  if (left) {
     delete left;
+  }
+  if (right) {
     delete right;
   }
 }
