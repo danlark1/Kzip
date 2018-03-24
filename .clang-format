@@ -3,12 +3,12 @@ AllowShortFunctionsOnASingleLine: false
 ColumnLimit: 120
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 BreakConstructorInitializersBeforeComma: true
-IndentWidth: 2
+IndentWidth: 4
 Language: Cpp
 NamespaceIndentation: All
 PointerBindsToType: false
 PointerAlignment: Left
 SpacesBeforeTrailingComments: 2
 Standard: Auto
-TabWidth: 2
+TabWidth: 4
 UseTab: Never

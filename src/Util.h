@@ -8,27 +8,27 @@
 #include <utility>
 
 class Comp {
-  public:
-  bool operator()(const std::pair<Node*, int64_t>& l, const std::pair<Node*, int64_t>& r) {
-    if (l.first->GetFrequency() == r.first->GetFrequency()) {
-      return r.second > l.second;
+public:
+    bool operator()(const std::pair<Node*, int64_t>& l, const std::pair<Node*, int64_t>& r) {
+        if (l.first->GetFrequency() == r.first->GetFrequency()) {
+            return r.second > l.second;
+        }
+        return l.first->GetFrequency() > r.first->GetFrequency();
     }
-    return l.first->GetFrequency() > r.first->GetFrequency();
-  }
 };
 
 struct KeyStr {
-  size_t size;
-  std::string str;
-  bool operator==(const KeyStr& other) const {
-    return std::tie(size, str) == std::tie(other.size, other.str);
-  }
-  bool operator<(const KeyStr& other) const {
-    return std::tie(size, str) < std::tie(other.size, other.str);
-  }
+    size_t size;
+    std::string str;
+    bool operator==(const KeyStr& other) const {
+        return std::tie(size, str) == std::tie(other.size, other.str);
+    }
+    bool operator<(const KeyStr& other) const {
+        return std::tie(size, str) < std::tie(other.size, other.str);
+    }
 };
 
 struct ValueStr {
-  int64_t occur;
-  bool taken;
+    int64_t occur;
+    bool taken;
 };
