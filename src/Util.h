@@ -9,6 +9,7 @@
 
 static constexpr size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
 static constexpr size_t CHAR_SIZE_POWER = 1 << CHAR_SIZE;
+static constexpr size_t MAX_CONCAT_SIZE = 1e6;
 
 struct KeyStr {
     size_t size;

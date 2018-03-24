@@ -123,8 +123,8 @@ void Tester::SaveConfig() {
     this->codec->Save("Dictionary");
 }
 
-void Tester::SetCodec(Codecs::CodecIFace* codec) {
-    this->codec = codec;
+void Tester::SetCodec(Codecs::CodecIFace* set_codec) {
+    this->codec = set_codec;
 }
 
 void Tester::TestEncode() {

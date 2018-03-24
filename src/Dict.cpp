@@ -141,7 +141,7 @@ namespace Codecs {
              [](auto& left, auto& right) { return left.second < right.second; });
     }
 
-    void HuffmanCodec::Shrinking(std::vector<std::pair<std::string, int64_t>>& ans_copied, const size_t concat_size) {
+    void HuffmanCodec::Shrinking(std::vector<std::pair<std::string, int64_t>>& ans_copied, const size_t concat_size_local) {
         std::map<KeyStr, ValueStr> CheckingStrMap;
         for (auto& str : ans_copied) {
             CheckingStrMap[{str.first.size(), str.first}] = {str.second, true};
@@ -159,7 +159,7 @@ namespace Codecs {
                     if (CheckingStrMap.count(lhsKS) && CheckingStrMap.count(rhsKS) && CheckingStrMap[lhsKS].taken &&
                         CheckingStrMap[rhsKS].taken) {
                         if (CheckingStrMap[lhsKS].occur * CheckingStrMap[rhsKS].occur >
-                            SecondStrOccur * static_cast<int64_t>(concat_size)) {
+                            SecondStrOccur * static_cast<int64_t>(concat_size_local)) {
                             SecondStrTaken = false;
                             break;
                         }

@@ -12,10 +12,8 @@
 #include <vector>
 
 namespace Codecs {
-    static constexpr size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
     // ceil and log are not constexpr
     const size_t LOG_CHAR_SIZE = std::ceil(std::log2(CHAR_SIZE));
-    static constexpr size_t MAX_CONCAT_SIZE = 1e6;
 
     class HuffmanCodec : public CodecIFace {
     public:
