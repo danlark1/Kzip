@@ -4,17 +4,15 @@
 
 #include <algorithm>
 #include <string>
-#include <vector>
 
 Node::Node()
     : left(nullptr)
     , right(nullptr)
     , frequency(0)
-    , data("") {
+{
 }
 
-Node::Node(const std::string& Data, const int64_t freq, const Node_type t) {  // make a leaf
-    type = t;
+Node::Node(const std::string& Data, const int64_t freq) {  // make a leaf
     data = std::move(Data);
     frequency = freq;
     left = nullptr;
@@ -22,8 +20,7 @@ Node::Node(const std::string& Data, const int64_t freq, const Node_type t) {  //
     std::fill(to_go.begin(), to_go.end(), std::make_pair("", nullptr));
 }
 
-Node::Node(Node* l, Node* r, Node_type t) {  // make a bind
-    type = t;
+Node::Node(Node* l, Node* r) {  // make a bind
     data.clear();
     data.shrink_to_fit();
     frequency = l->GetFrequency() + r->GetFrequency();

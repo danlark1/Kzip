@@ -159,7 +159,7 @@ namespace Codecs {
         ans.shrink_to_fit();
         trie.nodes.clear();
         trie = Trie();
-        for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
+        for (uint32_t c = 0; c < CHAR_SIZE_POWER; ++c) {
             std::string s(1, c);
             ans.push_back({s, 0});
         }
@@ -217,7 +217,7 @@ namespace Codecs {
 
     void HuffmanCodec::BuildJumps(Node* node) {
         Node* cur;
-        for (size_t byte = 0; byte < (1 << CHAR_SIZE); ++byte) {
+        for (size_t byte = 0; byte < (CHAR_SIZE_POWER); ++byte) {
             cur = node;
             if (!cur->right || !cur->left) {
                 continue;

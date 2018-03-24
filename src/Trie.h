@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Node.h"
+#include "Util.h"
 
 #include <array>
 #include <string>
@@ -9,7 +10,7 @@
 
 struct Uzel {
     bool is_terminal;
-    std::array<int32_t, 1 << CHAR_SIZE> next;
+    std::array<int32_t, CHAR_SIZE_POWER> next;
     std::vector<int8_t> code;
     Uzel(bool is_end)
         : is_terminal(is_end) {

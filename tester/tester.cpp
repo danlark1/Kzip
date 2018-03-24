@@ -11,7 +11,8 @@
 #include <string>
 #include <vector>
 
-template <typename Iter> void SelectSample(StringViewVector& sample, Iter begin, Iter end, size_t sample_size) {
+template <typename Iter>
+void SelectSample(StringViewVector& sample, Iter begin, Iter end, size_t sample_size) {
     std::sample(begin, end, std::back_inserter(sample), sample_size, std::mt19937(std::random_device()()));
 }
 
@@ -40,7 +41,6 @@ void Tester::ReadFile(const std::string& data_in_file) {
         this->data.push_back(cur_string);
     }
     input.close();
-    // sort(this->data.begin(), this->data.end());
     this->data.shrink_to_fit();
     printf("%zu strings were read\n", this->data.size());
 }
@@ -69,7 +69,6 @@ void Tester::ReadFileUint(const std::string& data_in_file) {
         this->data.push_back(cur_string);
     }
     input.close();
-    // sort(this->data.begin(), this->data.end());
     this->data.shrink_to_fit();
     printf("%zu strings were read\n", this->data.size());
 }

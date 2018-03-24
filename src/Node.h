@@ -1,21 +1,18 @@
 // Copyright 2017, Danila Kutenin
 #pragma once
 
-#include <climits>
+#include "Util.h"
 
 #include <array>
 #include <string>
-
-enum Node_type { LEAF, BIND };
-static constexpr size_t CHAR_SIZE = (sizeof(char) * CHAR_BIT);
 
 class Node {
 public:
     Node* left;
     Node* right;
     std::array<std::pair<std::string, Node*>, 1 << CHAR_BIT> to_go;
-    Node(const std::string&, const int64_t, const Node_type = LEAF);
-    Node(Node*, Node*, Node_type = BIND);
+    Node(const std::string&, const int64_t);
+    Node(Node*, Node*);
     Node(const Node&) = default;
     Node(Node&&) = default;
     ~Node();
@@ -26,5 +23,14 @@ public:
 private:
     int64_t frequency;
     std::string data;
-    Node_type type;
+};
+
+class Comp {
+public:
+    bool operator()(const std::pair<Node*, int64_t>& l, const std::pair<Node*, int64_t>& r) {
+        if (l.first->GetFrequency() == r.first->GetFrequency()) {
+            return r.second > l.second;
+        }
+        return l.first->GetFrequency() > r.first->GetFrequency();
+    }
 };

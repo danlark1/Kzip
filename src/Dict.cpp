@@ -27,7 +27,7 @@ namespace Codecs {
         trie.nodes.clear();
         trie = Trie();
         Trie trie_ch = Trie();
-        for (int32_t c = 0; c < (1 << CHAR_SIZE); ++c) {
+        for (uint32_t c = 0; c < CHAR_SIZE_POWER; ++c) {
             std::string s(1, c);
             ans.push_back({s, 0});
             trie_ch.Insert(s, {});
@@ -43,7 +43,7 @@ namespace Codecs {
     }
 
     unsigned char HuffmanCodec::MinCharSample(const StringViewVector& sample) {
-        std::vector<int64_t> least_char(1 << CHAR_SIZE);
+        std::array<int64_t, CHAR_SIZE_POWER> least_char{};
         for (size_t i = 0; i < sample.size(); ++i) {
             for (size_t j = 0; j < sample[i].size(); ++j) {
                 ++least_char[static_cast<unsigned char>(sample[i][j])];
@@ -137,7 +137,7 @@ namespace Codecs {
                     std::max(str.second.first, ans[static_cast<unsigned char>(str.first[0])].second);
             }
         }
-        sort(ans.rbegin(), ans.rend() - (1 << CHAR_SIZE),
+        sort(ans.rbegin(), ans.rend() - (CHAR_SIZE_POWER),
              [](auto& left, auto& right) { return left.second < right.second; });
     }
 
@@ -167,15 +167,13 @@ namespace Codecs {
                 }
             }
         }
-        ans_copied.resize(1 << CHAR_SIZE);
-        for (const auto& str : CheckingStrMap) {
-            auto FirstStr = str.first;
-            auto SecondStr = str.second;
+        ans_copied.resize(CHAR_SIZE_POWER);
+        for (const auto& [FirstStr, SecondStr] : CheckingStrMap) {
             if (SecondStr.taken && FirstStr.size >= 2) {
                 ans_copied.push_back({FirstStr.str, SecondStr.occur});
             }
         }
-        sort(ans_copied.rbegin(), ans_copied.rend() - (1 << CHAR_SIZE),
+        sort(ans_copied.rbegin(), ans_copied.rend() - (CHAR_SIZE_POWER),
              [](auto& left, auto& right) { return left.second < right.second; });
     }
 
