@@ -228,7 +228,7 @@ namespace Codecs {
                 } else {
                     cur = cur->left;
                 }
-                if (!cur->left) {  // is equal to cur->left == nullptr == cur->right
+                if (!cur->left) { // is equal to cur->left == nullptr == cur->right
                     node->to_go[byte].first += cur->GetData();
                     cur = root_for_decode;
                 }
@@ -249,4 +249,4 @@ namespace Codecs {
         }
     }
 
-}  // namespace Codecs
+} // namespace Codecs

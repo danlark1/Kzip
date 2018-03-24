@@ -21,7 +21,7 @@ struct Position {
 
 // Node_s of suffix tree
 struct Node_s {
-    int32_t parent, left, right, link;  //  [left, right)
+    int32_t parent, left, right, link; //  [left, right)
     std::unordered_map<unsigned char, int32_t> next;
     Node_s(int32_t l, int32_t r, int32_t p, int32_t suflink = -1)
         : parent(p)
@@ -32,7 +32,6 @@ struct Node_s {
 };
 
 class SuffTree {
-
 public:
     SuffTree(const std::string& str);
     std::vector<std::pair<std::string, int64_t>> FindSubstrings(const size_t dict_size, const unsigned char min_char);
@@ -40,7 +39,7 @@ public:
 private:
     // states of a suffix tree
     std::vector<Node_s> st;
-    std::string s;  // string
+    std::string s; // string
 
     // number of lists and sum of a string to this vertex
     std::vector<int32_t> num_of_lists;

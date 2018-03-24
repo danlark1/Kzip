@@ -40,11 +40,11 @@ namespace Codecs {
 #if defined(cthrow)
 #error "already defined"
 #else
-#define cthrow(what)                                                                                                   \
-    do {                                                                                                               \
-        std::ostringstream s;                                                                                          \
-        s << "at " << __FILE__ << ":" << __LINE__ << " " << what;                                                      \
-        throw CodecException(s.str());                                                                                 \
+#define cthrow(what)                                              \
+    do {                                                          \
+        std::ostringstream s;                                     \
+        s << "at " << __FILE__ << ":" << __LINE__ << " " << what; \
+        throw CodecException(s.str());                            \
     } while (false)
 #endif
 
@@ -60,6 +60,7 @@ namespace Codecs {
 
         virtual void Reset() = 0;
 
-        virtual ~CodecIFace() {}
+        virtual ~CodecIFace() {
+        }
     };
-}  // namespace Codecs
+} // namespace Codecs

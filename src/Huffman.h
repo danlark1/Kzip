@@ -42,4 +42,4 @@ namespace Codecs {
         std::string MakeOneString(StringViewVector&, const unsigned char);
         unsigned char MinCharSample(const StringViewVector&);
     };
-}  // namespace Codecs
+} // namespace Codecs

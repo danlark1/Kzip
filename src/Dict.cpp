@@ -177,4 +177,4 @@ namespace Codecs {
              [](auto& left, auto& right) { return left.second < right.second; });
     }
 
-}  // namespace Codecs
+} // namespace Codecs

@@ -156,7 +156,6 @@ void Tester::TestEncodeDecode() {
 
     std::ofstream errors("errors", std::ios_base::binary);
     for (auto& cur_string : this->data) {
-
         // start encoding
         std::string out;
         start = clock();
@@ -219,7 +218,6 @@ void Tester::SaveInfo() {
 }
 
 void Tester::CheckCorrectness() {
-
     int64_t error_count = 0;
     if (this->data.size() != this->decoded_data.size()) {
         printf("incorrect size of decoded stream\n");
@@ -233,7 +231,8 @@ void Tester::CheckCorrectness() {
         if (*data_it != *decoded_it) {
             ++error_count;
             if (error_count < 10) {
-                errors << *data_it << "\n" << *decoded_it << std::endl;
+                errors << *data_it << "\n"
+                       << *decoded_it << std::endl;
             }
         }
         ++i;
