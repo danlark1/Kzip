@@ -3,16 +3,16 @@
 
 #include "Node.h"
 
+#include <array>
 #include <string>
 #include <vector>
 
 struct Uzel {
     bool is_terminal;
-    std::vector<int32_t> next;
+    std::array<int32_t, 1 << CHAR_SIZE> next;
     std::vector<int8_t> code;
     Uzel(bool is_end)
         : is_terminal(is_end) {
-        this->next.resize(1 << CHAR_SIZE);
         std::fill(next.begin(), next.end(), -1);
     }
 };
