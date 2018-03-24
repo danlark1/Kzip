@@ -19,7 +19,6 @@ Node::Node(const std::string& Data, const int64_t freq, const Node_type t) {  //
     frequency = freq;
     left = nullptr;
     right = nullptr;
-    to_go.resize(1 << CHAR_SIZE);
     std::fill(to_go.begin(), to_go.end(), std::make_pair("", nullptr));
 }
 
@@ -30,7 +29,6 @@ Node::Node(Node* l, Node* r, Node_type t) {  // make a bind
     frequency = l->GetFrequency() + r->GetFrequency();
     left = l;
     right = r;
-    to_go.resize(1 << CHAR_SIZE);
     std::fill(to_go.begin(), to_go.end(), std::make_pair("", nullptr));
 }
 

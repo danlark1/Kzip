@@ -89,10 +89,11 @@ namespace Codecs {
 
         if (encoded_size >= 1) {
             while (count != CHAR_SIZE) {
-                if (byte & (1 << (CHAR_SIZE - count - 1)))
+                if (byte & (1 << (CHAR_SIZE - count - 1))) {
                     cur = cur->right;
-                else
+                } else {
                     cur = cur->left;
+                }
                 if (!cur->left) {
                     raw += cur->GetData();
                     cur = root_for_decode;
@@ -112,24 +113,27 @@ namespace Codecs {
 
         // last element
         while (true) {
-            if (byte & (1 << (CHAR_SIZE - count - 1)))
+            if (byte & (1 << (CHAR_SIZE - count - 1))) {
                 cur = cur->right;
-            else
+            } else {
                 cur = cur->left;
+            }
             if (!cur->left) {
                 raw += cur->GetData();
                 cur = root_for_decode;
             }
             ++count;
-            if (count == CHAR_SIZE || (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) == count)
+            if (count == CHAR_SIZE || (static_cast<unsigned char>(encoded[0]) >> (CHAR_SIZE - LOG_CHAR_SIZE)) == count) {
                 break;
+            }
         }
     }
 
     void HuffmanCodec::Save(const std::string_view file_name) const {
         std::ofstream output(file_name.data(), std::ios_base::binary);
-        for (const auto& str : ans)
+        for (const auto& str : ans) {
             output << std::hex << str.first.size() << " " << str.first << " " << std::hex << str.second << "\n";
+        }
         output.close();
     }
 

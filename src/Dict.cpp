@@ -44,9 +44,11 @@ namespace Codecs {
 
     unsigned char HuffmanCodec::MinCharSample(const StringViewVector& sample) {
         std::vector<int64_t> least_char(1 << CHAR_SIZE);
-        for (size_t i = 0; i < sample.size(); ++i)
-            for (size_t j = 0; j < sample[i].size(); ++j)
+        for (size_t i = 0; i < sample.size(); ++i) {
+            for (size_t j = 0; j < sample[i].size(); ++j) {
                 ++least_char[static_cast<unsigned char>(sample[i][j])];
+            }
+        }
         return static_cast<unsigned char>(
             std::distance(least_char.begin(), std::min_element(least_char.begin(), least_char.end())));
     }
@@ -95,8 +97,9 @@ namespace Codecs {
             if (static_cast<unsigned char>(concat[i]) != min_char) {
                 if (trie_ch.IsNext(uz, concat[i])) {
                     uz = trie_ch.Next(uz, concat[i]);
-                    if (trie_ch.nodes[uz].is_terminal)
+                    if (trie_ch.nodes[uz].is_terminal) {
                         size_uz = cur.size() + 1;
+                    }
                     cur.push_back(concat[i]);
                 } else {
                     while (cur.size() > size_uz) {
@@ -114,8 +117,9 @@ namespace Codecs {
                     cur.pop_back();
                     --i;
                 }
-                if (cur.size() != 0)
+                if (cur.size() != 0) {
                     ++to_check[cur].first;
+                }
                 uz = 0;
                 size_uz = 0;
                 cur.clear();
@@ -126,11 +130,12 @@ namespace Codecs {
     void HuffmanCodec::FinalStats(const std::unordered_map<std::string, std::pair<int64_t, int64_t>>& to_check) {
         for (const auto& str : to_check) {
             // if string occurs at least once than add to dictionary
-            if (str.second.first > 0 && str.first.size() >= 2)
+            if (str.second.first > 0 && str.first.size() >= 2) {
                 ans.push_back({str.first, str.second.first});
-            else
+            } else {
                 ans[static_cast<unsigned char>(str.first[0])].second =
                     std::max(str.second.first, ans[static_cast<unsigned char>(str.first[0])].second);
+            }
         }
         sort(ans.rbegin(), ans.rend() - (1 << CHAR_SIZE),
              [](auto& left, auto& right) { return left.second < right.second; });
@@ -166,8 +171,9 @@ namespace Codecs {
         for (const auto& str : CheckingStrMap) {
             auto FirstStr = str.first;
             auto SecondStr = str.second;
-            if (SecondStr.taken && FirstStr.size >= 2)
+            if (SecondStr.taken && FirstStr.size >= 2) {
                 ans_copied.push_back({FirstStr.str, SecondStr.occur});
+            }
         }
         sort(ans_copied.rbegin(), ans_copied.rend() - (1 << CHAR_SIZE),
              [](auto& left, auto& right) { return left.second < right.second; });
