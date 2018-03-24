@@ -32,7 +32,7 @@ void display_usage(void) {
     puts("--p --- parsing argument (0 for \\n, 1 for LE uint32_t, 0 default)");
     puts("--f --- file to test (no default) REQUIRED PARAMETER.");
     puts("--t --- to test time. Need more memory than usual. (0 or 1), 0 default");
-    exit(EXIT_FAILURE);
+    exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char* argv[]) {
