@@ -13,6 +13,11 @@ Good luck!
 Plans:
 
 Try boost::dynamic_bitset instead of std::vector<char>;
+
 Write simple tests inside the library;
+
 Have some fun with perf record and perf report;
+
 Documentation for usage;
+
+True Benchmarks with Gzip, bzip, zstd;
