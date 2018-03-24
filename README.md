@@ -12,7 +12,7 @@ Good luck!
 
 Plans:
 
-Try boost::dynamic_bitset instead of std::vector<char>;
+Try `boost::dynamic_bitset` instead of `std::vector<char>`;
 
 Write simple tests inside the library;
 
