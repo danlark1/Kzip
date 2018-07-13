@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 #pragma once
 
 #include "Node.h"

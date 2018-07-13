@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 #pragma once
 
 #include <algorithm>
@@ -39,9 +39,9 @@ public:
 private:
     // states of a suffix tree
     std::vector<Node_s> st;
-    std::string s; // string
+    std::string s; // std::string
 
-    // number of lists and sum of a string to this vertex
+    // number of lists and sum of a std::string to this vertex
     std::vector<int32_t> num_of_lists;
     std::vector<int32_t> sum_str;
 

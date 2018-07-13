@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 
 #include "Huffman.h"
 #include "Node.h"
@@ -19,9 +19,9 @@
 #include <utility>
 #include <vector>
 
-namespace Codecs {
+namespace NCodecs {
 
-    void HuffmanCodec::Learn(StringViewVector& sample, const size_t dict_size) {
+    void HuffmanCodec::Learn(std::vector<std::string_view>& sample, const size_t dict_size) {
         std::unordered_map<std::string, std::pair<int64_t, int64_t>> to_check;
         ans.clear();
         trie.nodes.clear();
@@ -42,7 +42,7 @@ namespace Codecs {
         BuildTree();
     }
 
-    unsigned char HuffmanCodec::MinCharSample(const StringViewVector& sample) {
+    unsigned char HuffmanCodec::MinCharSample(const std::vector<std::string_view>& sample) {
         std::array<int64_t, CHAR_SIZE_POWER> least_char{};
         for (size_t i = 0; i < sample.size(); ++i) {
             for (size_t j = 0; j < sample[i].size(); ++j) {
@@ -53,7 +53,7 @@ namespace Codecs {
             std::distance(least_char.begin(), std::min_element(least_char.begin(), least_char.end())));
     }
 
-    std::string HuffmanCodec::MakeOneString(StringViewVector& sample, const unsigned char min_char) {
+    std::string HuffmanCodec::MakeOneString(std::vector<std::string_view>& sample, const unsigned char min_char) {
         std::random_device rd;
         std::mt19937 gen(rd());
         std::shuffle(sample.begin(), sample.end(), gen);
@@ -129,7 +129,7 @@ namespace Codecs {
 
     void HuffmanCodec::FinalStats(const std::unordered_map<std::string, std::pair<int64_t, int64_t>>& to_check) {
         for (const auto& str : to_check) {
-            // if string occurs at least once than add to dictionary
+            // if std::string occurs at least once than add to dictionary
             if (str.second.first > 0 && str.first.size() >= 2) {
                 ans.push_back({str.first, str.second.first});
             } else {
@@ -177,4 +177,4 @@ namespace Codecs {
              [](auto& left, auto& right) { return left.second < right.second; });
     }
 
-} // namespace Codecs
+} // namespace NCodecs

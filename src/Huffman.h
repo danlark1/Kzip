@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 #pragma once
 
 #include "../codecs/codec.h"
@@ -11,18 +11,18 @@
 #include <string>
 #include <vector>
 
-namespace Codecs {
+namespace NCodecs {
     // ceil and log are not constexpr
     const size_t LOG_CHAR_SIZE = std::ceil(std::log2(CHAR_SIZE));
 
-    class HuffmanCodec : public CodecIFace {
+    class HuffmanCodec : public ICodecFace {
     public:
-        void Encode(string&, const string_view) const override;
-        void Decode(string&, const string_view) const override;
-        void Save(const string_view) const override;
-        void Load(const string_view) override;
+        void Encode(std::string&, const std::string_view) const override;
+        void Decode(std::string&, const std::string_view) const override;
+        void Save(const std::string_view) const override;
+        void Load(const std::string_view) override;
         size_t SampleSize(size_t) const override;
-        void Learn(StringViewVector&, const size_t) override;
+        void Learn(std::vector<std::string_view>&, const size_t) override;
         void Reset() override;
 
     private:
@@ -39,7 +39,7 @@ namespace Codecs {
                          const unsigned char);
         void FindStats(const std::string&, Trie&, std::unordered_map<std::string, std::pair<int64_t, int64_t>>&,
                        const unsigned char, const size_t);
-        std::string MakeOneString(StringViewVector&, const unsigned char);
-        unsigned char MinCharSample(const StringViewVector&);
+        std::string MakeOneString(std::vector<std::string_view>&, const unsigned char);
+        unsigned char MinCharSample(const std::vector<std::string_view>&);
     };
-} // namespace Codecs
+} // namespace NCodecs

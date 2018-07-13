@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 #include "Huffman.h"
 #include "tester.h"
 
@@ -37,7 +37,7 @@ void display_usage(void) {
 
 int main(int argc, char* argv[]) {
     Tester tester;
-    Codecs::HuffmanCodec huffman;
+    NCodecs::HuffmanCodec huffman;
     tester.SetCodec(&huffman);
     // path to file
 

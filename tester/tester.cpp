@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 
 #include "tester.h"
 
@@ -12,12 +12,12 @@
 #include <vector>
 
 template <typename Iter>
-void SelectSample(StringViewVector& sample, Iter begin, Iter end, size_t sample_size) {
+void SelectSample(std::vector<std::string_view>& sample, Iter begin, Iter end, size_t sample_size) {
     std::sample(begin, end, std::back_inserter(sample), sample_size, std::mt19937(std::random_device()()));
 }
 
 void Tester::LearnCodec(const size_t dict_size) {
-    StringViewVector sample;
+    std::vector<std::string_view> sample;
     SelectSample(sample, this->data.begin(), this->data.end(), this->codec->SampleSize(this->data.size()));
     double start = clock();
     if (dict_size == 0) {
@@ -123,7 +123,7 @@ void Tester::SaveConfig() {
     this->codec->Save("Dictionary");
 }
 
-void Tester::SetCodec(Codecs::CodecIFace* set_codec) {
+void Tester::SetCodec(NCodecs::ICodecFace* set_codec) {
     this->codec = set_codec;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 #include "Suffix_tree.h"
 
 #include <algorithm>

@@ -1,4 +1,4 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 
 #include "Huffman.h"
 #include "Node.h"
@@ -20,9 +20,9 @@
 #include <utility>
 #include <vector>
 
-namespace Codecs {
+namespace NCodecs {
 
-    void HuffmanCodec::Encode(string& encoded, const string_view raw) const {
+    void HuffmanCodec::Encode(std::string& encoded, const std::string_view raw) const {
         // empty strings should remain empty
         if (__builtin_expect(!raw.size(), false)) {
             return;
@@ -77,7 +77,7 @@ namespace Codecs {
         encoded[0] |= (static_cast<unsigned char>(CHAR_SIZE - count)) << (CHAR_SIZE - LOG_CHAR_SIZE);
     }
 
-    void HuffmanCodec::Decode(string& raw, const string_view encoded) const {
+    void HuffmanCodec::Decode(std::string& raw, const std::string_view encoded) const {
         if (__builtin_expect(!encoded.size(), false)) {
             return;
         }
@@ -154,7 +154,7 @@ namespace Codecs {
         code.pop_back();
     }
 
-    void HuffmanCodec::Load(const string_view config) {
+    void HuffmanCodec::Load(const std::string_view config) {
         ans.clear();
         ans.shrink_to_fit();
         trie.nodes.clear();
@@ -167,7 +167,7 @@ namespace Codecs {
         std::ifstream input(config.data(), std::ios_base::binary);
         while (input.good()) {
             size_t len_string;
-            string current;
+            std::string current;
             input >> std::hex >> len_string;
             input.get();
             if (!input.good())
@@ -249,4 +249,4 @@ namespace Codecs {
         }
     }
 
-} // namespace Codecs
+} // namespace NCodecs

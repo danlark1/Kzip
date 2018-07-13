@@ -1,12 +1,10 @@
-// Copyright 2017, Danila Kutenin
+// Copyright 2017-2018, Danila Kutenin
 #pragma once
 #include "codec.h"
 
 #include <string>
 #include <string_view>
 #include <vector>
-
-using StringViewVector = std::vector<std::string_view>;
 
 class Tester {
 public:
@@ -16,7 +14,7 @@ public:
     void WriteEncodedFile(const std::string&);
     void WriteDecodedFile(const std::string&);
     void LearnCodec(const size_t dict_size);
-    void SetCodec(Codecs::CodecIFace*);
+    void SetCodec(NCodecs::ICodecFace*);
     void CheckCorrectness();
     void SaveConfig();
     void SaveInfo();
@@ -28,7 +26,7 @@ public:
     void TestEncodeDecode();
 
 private:
-    Codecs::CodecIFace* codec;
+    NCodecs::ICodecFace* codec;
     std::vector<std::string> data;
     std::vector<std::string> decoded_data;
     std::vector<std::string> encoded_data;
