@@ -24,17 +24,17 @@ namespace NCodecs {
 
     void HuffmanCodec::Encode(std::string& encoded, const std::string_view raw) const {
         // empty strings should remain empty
-        if (__builtin_expect(!raw.size(), false)) {
+        if (LIKELY(!raw.size())) {
             return;
         }
         encoded.reserve(raw.size() << 1);
         unsigned char buf = 0;
         int8_t count = CHAR_SIZE - LOG_CHAR_SIZE;
-        size_t code_index = 0;
         size_t raw_index = 0;
-        size_t uz = 0;
         size_t copy_raw = 0;
-        size_t last_uz = 0;
+        uint32_t uz = 0;
+        uint32_t last_uz = 0;
+        uint32_t code_index = 0;
 
         while (raw_index < raw.size()) {
             code_index = 0;
@@ -53,7 +53,7 @@ namespace NCodecs {
                 }
             }
             raw_index = copy_raw;
-            size_t size_of_path = trie.nodes[last_uz].code.size();
+            uint32_t size_of_path = trie.nodes[last_uz].code.size();
             while (code_index < size_of_path) {
                 while (code_index < size_of_path && count) {
                     buf <<= 1;
@@ -70,7 +70,7 @@ namespace NCodecs {
             ++raw_index;
         }
         // this happens with probability 7/8
-        if (__builtin_expect(count != CHAR_SIZE, true)) {
+        if (LIKELY(count != CHAR_SIZE)) {
             encoded.push_back(buf << count);
         }
         // first "three" bits for last char
@@ -78,7 +78,7 @@ namespace NCodecs {
     }
 
     void HuffmanCodec::Decode(std::string& raw, const std::string_view encoded) const {
-        if (__builtin_expect(!encoded.size(), false)) {
+        if (LIKELY(!encoded.size())) {
             return;
         }
         raw.reserve(encoded.size() << 1);

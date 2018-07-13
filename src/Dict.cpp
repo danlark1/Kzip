@@ -149,7 +149,7 @@ namespace NCodecs {
         for (auto& str : CheckingStrMap) {
             const auto& [FirstStrSize, FirstStrStr] = str.first;
             auto& [SecondStrOccur, SecondStrTaken] = str.second;
-            (void)SecondStrTaken;
+            UNUSED(SecondStrTaken);
             if (FirstStrSize > 1) {
                 for (size_t i = 1; i < FirstStrSize; ++i) {
                     auto lhs = FirstStrStr.substr(0, i);

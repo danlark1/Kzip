@@ -18,7 +18,7 @@ public:
     ~Node();
     Node();
     int64_t GetFrequency() const;
-    std::string GetData() const;
+    const std::string& GetData() const;
 
 private:
     int64_t frequency;

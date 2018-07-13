@@ -41,6 +41,6 @@ int64_t Node::GetFrequency() const { // frequency of a node
     return frequency;
 }
 
-std::string Node::GetData() const {
+const std::string& Node::GetData() const {
     return data;
 }
